@@ -1,4 +1,4 @@
-#include <stdlib.h>
+
 #include <iostream>
 #include <string>
 #include <fstream>
@@ -6,6 +6,17 @@
 using namespace std;
 
 const int MAX_SHIPS_AMOUNT = 2;
+
+struct Battleship
+{
+    char posLetter, dirLetter;
+    int posNumber;
+};
+
+void AssembleString(Battleship config)
+{
+    cout << config.posLetter << config.posNumber << " " << config.dirLetter;
+}
 
 int myStrlen(char str[])
 {
@@ -52,24 +63,46 @@ void GetConfigFromFile(char pos[][4], char directions[][2], string filePath)
     userFile.close();
 }
 
-bool CheckConfig(char pos[][4], char directions[][2])
+void InputConfigMember(Battleship &config)
+{
+    char buffer[4];
+    cin >> buffer;
+   
+    config.posLetter = (int)buffer[0];
+
+    if (myStrlen(buffer) == 2)
+    {
+        config.posNumber = buffer[1] - '0';
+    }
+    else if (myStrlen(buffer) == 3)
+    {
+        config.posNumber = 0;
+        config.posNumber += (buffer[1] - '0') * 10;
+        config.posNumber += buffer[2] - '0';
+    }
+
+    cin >> config.dirLetter;
+}
+
+bool CheckConfig(Battleship config[])
 {
     for (int i = 0; i < MAX_SHIPS_AMOUNT; i++)
     {
 
-        if ((pos[i][0] < 'A' || pos[i][0] > 'J') && (pos[i][0] < 'a' || pos[i][0] > 'j'))
+        char posLetter = config[i].posLetter;
+        if ((posLetter < 'A' || posLetter > 'J') && (posLetter < 'a' || posLetter > 'j'))
         {
             return false;
         }
         
-        if ((myStrlen(pos[i]) == 2 && (pos[i][1] < '1' || pos[i][1] > '9')) ||
-            (myStrlen(pos[i]) == 3 && (pos[i][1] != '1' || pos[i][2] != '0')))
+        if (config[i].posNumber > 10)
         {
             return false;
         }
 
-        if (directions[i][0] != 'r' && directions[i][0] != 'l' && directions[i][0] != 't' && directions[i][0] != 'b' &&
-            directions[i][0] != 'R' && directions[i][0] != 'L' && directions[i][0] != 'T' && directions[i][0] != 'B')
+        char dirLetter = config[i].dirLetter;
+        if (dirLetter != 'r' && dirLetter != 'l' && dirLetter != 't' && dirLetter != 'b' &&
+            dirLetter != 'R' && dirLetter != 'L' && dirLetter != 'T' && dirLetter != 'B')
         {
             return false;
         }
@@ -77,37 +110,40 @@ bool CheckConfig(char pos[][4], char directions[][2])
     }
     return true;
 }
-void EditConfig(char pos[][4], char directions[][2])
+void EditConfig(Battleship config[])
 {
     
     for (int i = 0; i < MAX_SHIPS_AMOUNT; i++)
     {
-        
-        if ((pos[i][0] < 'A' || pos[i][0] > 'J') && (pos[i][0] < 'a' || pos[i][0] > 'j'))
+        char posLetter = config[i].posLetter;
+        char dirLetter = config[i].dirLetter;
+        bool trigger = false;
+
+        if ((posLetter < 'A' || posLetter > 'J') && (posLetter < 'a' || posLetter > 'j'))
         {
             cout << "Please input valid position character from A to J" << endl;
-            cout << "Position to edit : " << pos[i] << "  " << directions[i] << endl;
-            cout << "Input:";
-            cin >> pos[i];
+            trigger = true;
         }
-        else if ((myStrlen(pos[i]) == 2 && (pos[i][1] < '1' || pos[i][1] > '9')) ||
-                (myStrlen(pos[i]) == 3 && (pos[i][1] != '1' || pos[i][2] != '0')))
+        if (config[i].posNumber > 10)
         {
-            
             cout << "Please input valid position number from 1 to 10" << endl;
-            cout << "Position to edit : " << pos[i] << "  " << directions[i] << endl;
-            cout << "Input:";
-            cin >> pos[i];
+            trigger = true;
         }
-        
-        if (directions[i][0] != 'r' && directions[i][0] != 'l' && directions[i][0] != 't' && directions[i][0] != 'b' &&
-            directions[i][0] != 'R' && directions[i][0] != 'L' && directions[i][0] != 'T' && directions[i][0] != 'B')
+        if (dirLetter != 'r' && dirLetter != 'l' && dirLetter != 't' && dirLetter != 'b' &&
+            dirLetter != 'R' && dirLetter != 'L' && dirLetter != 'T' && dirLetter != 'B')
         {
-            cout << "Please input valid direction for position " << pos[i] << endl;
-            cout << "Input:";
-            cin >> directions[i];
+            cout << "Please input valid direction" << endl;
+            trigger = true;
         }
         
+        if (trigger)
+        {
+            cout << "Position to edit : ";
+            AssembleString(config[i]);
+            cout << endl;
+            InputConfigMember(config[i]);
+        }
+        cout << endl;
     }
     
 }
@@ -115,9 +151,9 @@ void EditConfig(char pos[][4], char directions[][2])
 int main()
 {
     char answer;
-    char pos[MAX_SHIPS_AMOUNT][4] = {"A11", "A9"};
-    char directions[MAX_SHIPS_AMOUNT][2] = {"r", "y" };
-    /*cout << "Would you like to upload ship configuration from file?" << endl;
+    Battleship config[MAX_SHIPS_AMOUNT] = {};
+    
+    cout << "Would you like to upload ship configuration from file?" << endl;
     cout << "Y / N? : ";
     cin >> answer;
     if (answer == 'Y' || answer == 'y')
@@ -126,19 +162,23 @@ int main()
     }
     else
     {
-        cout << "Input your ship configuration:";
-        InputShipConfig(config);
-    }*/
-    
-    while (CheckConfig(pos, directions) == false)
-    {
-        EditConfig(pos, directions);
-        system("CLS");
+        cout << "Input your ship configuration in format A1 r : " << endl;
+        for (int i = 0; i < MAX_SHIPS_AMOUNT; i++)
+        {
+            InputConfigMember(config[i]);
+        }
     }
-
+    
+    while (CheckConfig(config) == false)
+    {
+        EditConfig(config);
+    }
+    
+    
     for (int i = 0; i < MAX_SHIPS_AMOUNT; i++)
     {
-        cout << pos[i] << " : " << directions[i] << endl;
+        AssembleString(config[i]);
+        cout << endl;
     }
     
     return 0;
