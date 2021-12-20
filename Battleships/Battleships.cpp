@@ -1,5 +1,8 @@
-
+#include <stdlib.h>
 #include <iostream>
+#include <string>
+#include <fstream>
+
 using namespace std;
 
 const int MAX_SHIPS_AMOUNT = 2;
@@ -28,6 +31,27 @@ void InputShipConfig(char pos[][4], char directions[][2])
     }
      
 }
+void GetConfigFromFile(char pos[][4], char directions[][2], string filePath)
+{
+    fstream userFile;
+    userFile.open(filePath, fstream::in);
+    
+    if (userFile.is_open() == false) {
+
+        cout << "Failed to open file";
+    }
+    string buffer;
+
+    while (getline(userFile, buffer)) 
+    {
+        //if(buffer.length() < 4 || buffer.length() > 5)
+       
+
+    }
+
+    userFile.close();
+}
+
 bool CheckConfig(char pos[][4], char directions[][2])
 {
     for (int i = 0; i < MAX_SHIPS_AMOUNT; i++)
@@ -109,6 +133,7 @@ int main()
     while (CheckConfig(pos, directions) == false)
     {
         EditConfig(pos, directions);
+        system("CLS");
     }
 
     for (int i = 0; i < MAX_SHIPS_AMOUNT; i++)
