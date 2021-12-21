@@ -144,11 +144,13 @@ void EditConfig(Battleship &config)
     cout << endl;
 }
 
-int main()
+void PlayerStart(Battleship configPlayer[], string playerName)
 {
     char answer;
-    Battleship config[MAX_SHIPS_AMOUNT] = {};
-    
+    cout << "----------" << endl;
+    cout << playerName << " :" << endl;
+    cout << "----------" << endl;
+    cout << endl;
     cout << "Would you like to upload ship configuration from file?" << endl;
     cout << "Y / N? : ";
     cin >> answer;
@@ -157,32 +159,33 @@ int main()
         string path;
         cout << "Please input file path : ";
         cin >> path;
-        GetConfigFromFile(config, path);
+        GetConfigFromFile(configPlayer, path);
     }
     else
     {
         cout << "Input your ship configuration in format A1 r : " << endl;
         for (int i = 0; i < MAX_SHIPS_AMOUNT; i++)
         {
-            InputConfigMember(config[i]);
+            InputConfigMember(configPlayer[i]);
         }
     }
-    
+
     for (int i = 0; i < MAX_SHIPS_AMOUNT; i++)
     {
-        while (CheckConfig(config[i]) == false)
+        while (CheckConfig(configPlayer[i]) == false)
         {
-            EditConfig(config[i]);
+            EditConfig(configPlayer[i]);
         }
     }
+}
+int main()
+{
     
+    Battleship configPlayer1[MAX_SHIPS_AMOUNT] = {};
+    Battleship configPlayer2[MAX_SHIPS_AMOUNT] = {};
     
-    
-    for (int i = 0; i < MAX_SHIPS_AMOUNT; i++)
-    {
-        AssembleString(config[i]);
-        cout << endl;
-    }
+    PlayerStart(configPlayer1, "PLAYER 1");
+    PlayerStart(configPlayer2, "PLAYER 2");
     
     return 0;
 }
