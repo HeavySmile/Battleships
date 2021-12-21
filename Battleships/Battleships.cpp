@@ -10,7 +10,7 @@ const int MAX_SHIPS_AMOUNT = 2;
 struct Battleship
 {
     char posLetter, dirLetter;
-    int posNumber;
+    int posNumber, length;
 };
 
 void AssembleString(Battleship config)
@@ -49,6 +49,11 @@ bool CheckConfig(Battleship config)
         return false;
     }
 
+    if (config.length < 1 || config.length > 4)
+    {
+        return false;
+    }
+
     return true;
 }
 
@@ -71,17 +76,19 @@ void GetConfigFromFile(Battleship config[], string filePath)
         {
             config[i].posLetter = buffer[0];
             
-            if (buffer.length() == 4)
+            if (buffer.length() == 6)
             {
                 config[i].posNumber = buffer[1] - '0';
                 config[i].dirLetter = buffer[3];
+                config[i].length = buffer[5];
             }
-            else if (buffer.length() == 5)
+            else if (buffer.length() == 7)
             {
                 config[i].posNumber = 0;
                 config[i].posNumber += (buffer[1] - '0') * 10;
                 config[i].posNumber += buffer[2] - '0';
                 config[i].dirLetter = buffer[4];
+                config[i].length = buffer[6];
             }
             
         }
@@ -109,9 +116,10 @@ void InputConfigMember(Battleship &config)
     }
 
     cin >> config.dirLetter;
+    cin >> config.length;
 }
 
-void EditConfig(Battleship &config)
+void CorrectConfig(Battleship &config)
 {
     char posLetter = config.posLetter;
     char dirLetter = config.dirLetter;
@@ -133,7 +141,12 @@ void EditConfig(Battleship &config)
         cout << "Please input valid direction" << endl;
         trigger = true;
     }
-        
+    if (config.length < 2 || config.length > 6 || config.length == 5)
+    {
+        cout << "Please input valid length 2 , 3 , 4 , 6" << endl;
+        trigger = true;
+    }
+
     if (trigger)
     {
         cout << "Position to edit : ";
@@ -163,21 +176,19 @@ void PlayerStart(Battleship configPlayer[], string playerName)
     }
     else
     {
-        cout << "Input your ship configuration in format A1 r : " << endl;
+        cout << "Input your ship configuration in format A1 R L , where A1 is starting tile, R is direction and L is length: " << endl;
         for (int i = 0; i < MAX_SHIPS_AMOUNT; i++)
         {
             InputConfigMember(configPlayer[i]);
+            while (CheckConfig(configPlayer[i]) == false)
+            {
+                CorrectConfig(configPlayer[i]);
+            }
         }
     }
 
-    for (int i = 0; i < MAX_SHIPS_AMOUNT; i++)
-    {
-        while (CheckConfig(configPlayer[i]) == false)
-        {
-            EditConfig(configPlayer[i]);
-        }
-    }
 }
+
 int main()
 {
     
