@@ -42,7 +42,35 @@ void InputShipConfig(char pos[][4], char directions[][2])
     }
      
 }
-void GetConfigFromFile(char pos[][4], char directions[][2], string filePath)
+
+bool CheckConfig(Battleship config[])
+{
+    for (int i = 0; i < MAX_SHIPS_AMOUNT; i++)
+    {
+
+        char posLetter = config[i].posLetter;
+        if ((posLetter < 'A' || posLetter > 'J') && (posLetter < 'a' || posLetter > 'j'))
+        {
+            return false;
+        }
+
+        if (config[i].posNumber > 10)
+        {
+            return false;
+        }
+
+        char dirLetter = config[i].dirLetter;
+        if (dirLetter != 'r' && dirLetter != 'l' && dirLetter != 't' && dirLetter != 'b' &&
+            dirLetter != 'R' && dirLetter != 'L' && dirLetter != 'T' && dirLetter != 'B')
+        {
+            return false;
+        }
+
+    }
+    return true;
+}
+
+void GetConfigFromFile(Battleship config[], string filePath)
 {
     fstream userFile;
     userFile.open(filePath, fstream::in);
@@ -53,13 +81,30 @@ void GetConfigFromFile(char pos[][4], char directions[][2], string filePath)
     }
     string buffer;
 
-    while (getline(userFile, buffer)) 
+    for (int i = 0; i < MAX_SHIPS_AMOUNT; i++)
     {
-        //if(buffer.length() < 4 || buffer.length() > 5)
-       
+        // C:\\Users\\lenya\\Documents\\Battleships.txt
+        getline(userFile, buffer);
+        if (buffer.length() < 6)
+        {
+            config[i].posLetter = buffer[0];
+            
+            if (buffer.length() == 4)
+            {
+                config[i].posNumber = buffer[1] - '0';
+                config[i].dirLetter = buffer[3];
+            }
+            else if (buffer.length() == 5)
+            {
+                config[i].posNumber = 0;
+                config[i].posNumber += (buffer[1] - '0') * 10;
+                config[i].posNumber += buffer[2] - '0';
+                config[i].dirLetter = buffer[4];
+            }
+            
+        }
 
     }
-
     userFile.close();
 }
 
@@ -84,32 +129,6 @@ void InputConfigMember(Battleship &config)
     cin >> config.dirLetter;
 }
 
-bool CheckConfig(Battleship config[])
-{
-    for (int i = 0; i < MAX_SHIPS_AMOUNT; i++)
-    {
-
-        char posLetter = config[i].posLetter;
-        if ((posLetter < 'A' || posLetter > 'J') && (posLetter < 'a' || posLetter > 'j'))
-        {
-            return false;
-        }
-        
-        if (config[i].posNumber > 10)
-        {
-            return false;
-        }
-
-        char dirLetter = config[i].dirLetter;
-        if (dirLetter != 'r' && dirLetter != 'l' && dirLetter != 't' && dirLetter != 'b' &&
-            dirLetter != 'R' && dirLetter != 'L' && dirLetter != 'T' && dirLetter != 'B')
-        {
-            return false;
-        }
-
-    }
-    return true;
-}
 void EditConfig(Battleship config[])
 {
     
@@ -158,7 +177,10 @@ int main()
     cin >> answer;
     if (answer == 'Y' || answer == 'y')
     {
-
+        string path;
+        cout << "Please input file path : ";
+        cin >> path;
+        GetConfigFromFile(config, path);
     }
     else
     {
