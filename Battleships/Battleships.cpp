@@ -15,7 +15,8 @@ struct Battleship
 
 void AssembleString(Battleship config)
 {
-    cout << config.posLetter << config.posNumber << " " << config.dirLetter;
+    cout << config.posLetter << config.posNumber << " ";
+    cout << config.dirLetter << " " << config.length;
 }
 
 int myStrlen(char str[])
@@ -49,11 +50,11 @@ bool CheckConfig(Battleship config)
         return false;
     }
 
-    if (config.length < 1 || config.length > 4)
+    if (config.length < 2 || config.length > 6 || config.length == 5)
     {
         return false;
     }
-
+    
     return true;
 }
 
@@ -143,7 +144,7 @@ void CorrectConfig(Battleship &config)
     }
     if (config.length < 2 || config.length > 6 || config.length == 5)
     {
-        cout << "Please input valid length 2 , 3 , 4 , 6" << endl;
+        cout << "Please input valid length : 2 , 3 , 4 , 6" << endl;
         trigger = true;
     }
 
@@ -180,7 +181,7 @@ void PlayerStart(Battleship configPlayer[], string playerName)
         for (int i = 0; i < MAX_SHIPS_AMOUNT; i++)
         {
             InputConfigMember(configPlayer[i]);
-            while (CheckConfig(configPlayer[i]) == false)
+            while (!CheckConfig(configPlayer[i]))
             {
                 CorrectConfig(configPlayer[i]);
             }
