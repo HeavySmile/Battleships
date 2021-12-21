@@ -29,44 +29,26 @@ int myStrlen(char str[])
     return size;
 }
 
-void InputShipConfig(char pos[][4], char directions[][2])
+bool CheckConfig(Battleship config)
 {
-    
-   
-    for (int i = 0; i < MAX_SHIPS_AMOUNT; i++)
+    char posLetter = config.posLetter;
+    if ((posLetter < 'A' || posLetter > 'J') && (posLetter < 'a' || posLetter > 'j'))
     {
-        cout << "Input ship position : ";
-        cin >> pos[i];
-        cout << "Input ship direction : ";
-        cin >> directions[i];
+        return false;
     }
-     
-}
 
-bool CheckConfig(Battleship config[])
-{
-    for (int i = 0; i < MAX_SHIPS_AMOUNT; i++)
+    if (config.posNumber > 10)
     {
-
-        char posLetter = config[i].posLetter;
-        if ((posLetter < 'A' || posLetter > 'J') && (posLetter < 'a' || posLetter > 'j'))
-        {
-            return false;
-        }
-
-        if (config[i].posNumber > 10)
-        {
-            return false;
-        }
-
-        char dirLetter = config[i].dirLetter;
-        if (dirLetter != 'r' && dirLetter != 'l' && dirLetter != 't' && dirLetter != 'b' &&
-            dirLetter != 'R' && dirLetter != 'L' && dirLetter != 'T' && dirLetter != 'B')
-        {
-            return false;
-        }
-
+        return false;
     }
+
+    char dirLetter = config.dirLetter;
+    if (dirLetter != 'r' && dirLetter != 'l' && dirLetter != 't' && dirLetter != 'b' &&
+        dirLetter != 'R' && dirLetter != 'L' && dirLetter != 'T' && dirLetter != 'B')
+    {
+        return false;
+    }
+
     return true;
 }
 
@@ -129,42 +111,37 @@ void InputConfigMember(Battleship &config)
     cin >> config.dirLetter;
 }
 
-void EditConfig(Battleship config[])
+void EditConfig(Battleship &config)
 {
-    
-    for (int i = 0; i < MAX_SHIPS_AMOUNT; i++)
-    {
-        char posLetter = config[i].posLetter;
-        char dirLetter = config[i].dirLetter;
-        bool trigger = false;
+    char posLetter = config.posLetter;
+    char dirLetter = config.dirLetter;
+    bool trigger = false;
 
-        if ((posLetter < 'A' || posLetter > 'J') && (posLetter < 'a' || posLetter > 'j'))
-        {
-            cout << "Please input valid position character from A to J" << endl;
-            trigger = true;
-        }
-        if (config[i].posNumber > 10)
-        {
-            cout << "Please input valid position number from 1 to 10" << endl;
-            trigger = true;
-        }
-        if (dirLetter != 'r' && dirLetter != 'l' && dirLetter != 't' && dirLetter != 'b' &&
-            dirLetter != 'R' && dirLetter != 'L' && dirLetter != 'T' && dirLetter != 'B')
-        {
-            cout << "Please input valid direction" << endl;
-            trigger = true;
-        }
-        
-        if (trigger)
-        {
-            cout << "Position to edit : ";
-            AssembleString(config[i]);
-            cout << endl;
-            InputConfigMember(config[i]);
-        }
-        cout << endl;
+    if ((posLetter < 'A' || posLetter > 'J') && (posLetter < 'a' || posLetter > 'j'))
+    {
+        cout << "Please input valid position character from A to J" << endl;
+        trigger = true;
     }
-    
+    if (config.posNumber > 10)
+    {
+        cout << "Please input valid position number from 1 to 10" << endl;
+        trigger = true;
+    }
+    if (dirLetter != 'r' && dirLetter != 'l' && dirLetter != 't' && dirLetter != 'b' &&
+        dirLetter != 'R' && dirLetter != 'L' && dirLetter != 'T' && dirLetter != 'B')
+    {
+        cout << "Please input valid direction" << endl;
+        trigger = true;
+    }
+        
+    if (trigger)
+    {
+        cout << "Position to edit : ";
+        AssembleString(config);
+        cout << endl;
+        InputConfigMember(config);
+    }
+    cout << endl;
 }
 
 int main()
@@ -191,10 +168,14 @@ int main()
         }
     }
     
-    while (CheckConfig(config) == false)
+    for (int i = 0; i < MAX_SHIPS_AMOUNT; i++)
     {
-        EditConfig(config);
+        while (CheckConfig(config[i]) == false)
+        {
+            EditConfig(config[i]);
+        }
     }
+    
     
     
     for (int i = 0; i < MAX_SHIPS_AMOUNT; i++)
