@@ -5,7 +5,15 @@
 
 using namespace std;
 
-const int MAX_SHIPS_AMOUNT = 2;
+const int MAX_SHIPS_AMOUNT = 4;
+const int MAX_6TILE_SHIPS_AMOUNT = 1;
+const int MAX_4TILE_SHIPS_AMOUNT = 2;
+const int MAX_3TILE_SHIPS_AMOUNT = 3;
+const int MAX_2TILE_SHIPS_AMOUNT = 4;
+int current6TileAmount = 0;
+int current4TileAmount = 0;
+int current3TileAmount = 0;
+int current2TileAmount = 0;
 
 struct Battleship
 {
@@ -54,6 +62,27 @@ bool CheckConfig(Battleship config)
     {
         return false;
     }
+    
+    if (current6TileAmount > MAX_6TILE_SHIPS_AMOUNT)
+    {
+        return false;
+    }
+
+    if (current4TileAmount > MAX_4TILE_SHIPS_AMOUNT)
+    {
+        return false;
+    }
+
+    if (current3TileAmount > MAX_3TILE_SHIPS_AMOUNT)
+    {
+        return false;
+    }
+    
+    if (current2TileAmount > MAX_2TILE_SHIPS_AMOUNT)
+    {
+        return false;
+    }
+    
     
     return true;
 }
@@ -118,6 +147,26 @@ void InputConfigMember(Battleship &config)
 
     cin >> config.dirLetter;
     cin >> config.length;
+
+    if (config.length == 6)
+    {
+        current6TileAmount++;
+    }
+
+    if (config.length == 4)
+    {
+        current4TileAmount++;
+    }
+
+    if (config.length == 3)
+    {
+        current3TileAmount++;
+    }
+
+    if (config.length == 2)
+    {
+        current2TileAmount++;
+    }
 }
 
 void CorrectConfig(Battleship &config)
@@ -126,6 +175,7 @@ void CorrectConfig(Battleship &config)
     char dirLetter = config.dirLetter;
     bool trigger = false;
 
+    cout << endl;
     if ((posLetter < 'A' || posLetter > 'J') && (posLetter < 'a' || posLetter > 'j'))
     {
         cout << "Please input valid position character from A to J" << endl;
@@ -147,6 +197,34 @@ void CorrectConfig(Battleship &config)
         cout << "Please input valid length : 2 , 3 , 4 , 6" << endl;
         trigger = true;
     }
+    
+    if (current6TileAmount > MAX_6TILE_SHIPS_AMOUNT)
+    {
+        cout << "Please input valid length, you reached max number of 6 tile ships" << endl;
+        current6TileAmount--;
+        trigger = true;
+    }
+
+    if (current4TileAmount > MAX_4TILE_SHIPS_AMOUNT)
+    {
+        cout << "Please input valid length, you reached max number of 4 tile ships" << endl;
+        current4TileAmount--;
+        trigger = true;
+    }
+
+    if (current3TileAmount > MAX_3TILE_SHIPS_AMOUNT)
+    {
+        cout << "Please input valid length, you reached max number of 3 tile ships" << endl;
+        current3TileAmount--;
+        trigger = true;
+    }
+
+    if (current2TileAmount > MAX_2TILE_SHIPS_AMOUNT)
+    {
+        cout << "Please input valid length, you reached max number of 2 tile ships" << endl;
+        current2TileAmount--;
+        trigger = true;
+    }
 
     if (trigger)
     {
@@ -155,7 +233,7 @@ void CorrectConfig(Battleship &config)
         cout << endl;
         InputConfigMember(config);
     }
-    cout << endl;
+    
 }
 
 void PlayerStart(Battleship configPlayer[], string playerName)
@@ -187,6 +265,11 @@ void PlayerStart(Battleship configPlayer[], string playerName)
             }
         }
     }
+
+    current6TileAmount = 0;
+    current4TileAmount = 0;
+    current3TileAmount = 0;
+    current2TileAmount = 0;
 
 }
 
