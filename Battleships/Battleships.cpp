@@ -5,7 +5,7 @@
 
 using namespace std;
 
-const int MAX_SHIPS_AMOUNT = 4;
+const int MAX_SHIPS_AMOUNT = 2;
 const int MAX_6TILE_SHIPS_AMOUNT = 1;
 const int MAX_4TILE_SHIPS_AMOUNT = 2;
 const int MAX_3TILE_SHIPS_AMOUNT = 3;
@@ -236,6 +236,14 @@ void CorrectConfig(Battleship &config)
     
 }
 
+void ClearConsole()
+{
+    for (int i = 0; i < 50; i++)
+    {
+        cout << endl;
+    }
+}
+
 void PlayerStart(Battleship configPlayer[], string playerName)
 {
     char answer;
@@ -270,8 +278,9 @@ void PlayerStart(Battleship configPlayer[], string playerName)
     current4TileAmount = 0;
     current3TileAmount = 0;
     current2TileAmount = 0;
-
 }
+
+
 
 int main()
 {
