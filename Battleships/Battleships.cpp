@@ -10,10 +10,16 @@ const int MAX_6TILE_SHIPS_AMOUNT = 1;
 const int MAX_4TILE_SHIPS_AMOUNT = 2;
 const int MAX_3TILE_SHIPS_AMOUNT = 3;
 const int MAX_2TILE_SHIPS_AMOUNT = 4;
+const int BOARD_WIDTH = 10;
+const int BOARD_HEIGHT = 10;
+
 int current6TileAmount = 0;
 int current4TileAmount = 0;
 int current3TileAmount = 0;
 int current2TileAmount = 0;
+
+int player1ShipBoard[BOARD_HEIGHT][BOARD_WIDTH] = { {0}, {0}, {0}, {0}, {0}, {0}, {0}, {0}, {0}, {0} };
+int player2ShipBoard[BOARD_HEIGHT][BOARD_WIDTH] = { {0}, {0}, {0}, {0}, {0}, {0}, {0}, {0}, {0}, {0} };
 
 struct Battleship
 {
@@ -244,7 +250,48 @@ void ClearConsole()
     }
 }
 
-void PlayerStart(Battleship configPlayer[], string playerName)
+void AddToShipBoard(Battleship &config, int playerShipBoard[BOARD_HEIGHT][BOARD_WIDTH])
+{
+    int widthIndex = 0;
+    
+    if (config.posLetter >= 'A' && config.posLetter <= 'J')
+    {
+        widthIndex = config.posLetter - 'A';
+    }
+    else
+    {
+        widthIndex = config.posLetter - 'a';
+    }
+   
+    if (config.dirLetter == 'r' || config.dirLetter == 'R')
+    {
+        while (widthIndex + config.length > BOARD_WIDTH)
+        {
+            cout << "Move your ship, it's too long to fit the board" << endl;
+            char answer;
+            cout << "Do you want to change ship position or just length?" << endl;
+            cout << "P / L? : ";
+            cin >> answer;
+            if (answer == 'P' || answer == 'p')
+            {
+                cout << "Input your ship configuration in format A1 R L , where A1 is starting tile, R is direction and L is length: " << endl;
+                InputConfigMember(config);
+            }
+            else
+            {
+                cout << "Input new length : ";
+                cin >> config.length;
+            }
+        }
+        
+        for (int i = widthIndex; i < widthIndex + config.length; i++)
+        {
+            playerShipBoard[config.posNumber - 1][i] = 1;
+        }
+    }
+}
+
+void PlayerStart(Battleship configPlayer[], string playerName, int playerShipBoard[BOARD_HEIGHT][BOARD_WIDTH])
 {
     char answer;
     cout << "----------" << endl;
@@ -271,6 +318,7 @@ void PlayerStart(Battleship configPlayer[], string playerName)
             {
                 CorrectConfig(configPlayer[i]);
             }
+            AddToShipBoard(configPlayer[i], playerShipBoard);
         }
     }
 
@@ -288,9 +336,18 @@ int main()
     Battleship configPlayer1[MAX_SHIPS_AMOUNT] = {};
     Battleship configPlayer2[MAX_SHIPS_AMOUNT] = {};
     
-    PlayerStart(configPlayer1, "PLAYER 1");
-    PlayerStart(configPlayer2, "PLAYER 2");
+    PlayerStart(configPlayer1, "PLAYER 1", player1ShipBoard);
+   // PlayerStart(configPlayer2, "PLAYER 2", player2ShipBoard);
     
+    cout << endl;
+    for (int i = 0; i < BOARD_HEIGHT; i++)
+    {
+        for (int j = 0; j < BOARD_WIDTH; j++)
+        {
+            cout << player1ShipBoard[i][j] << " ";
+        }
+        cout << endl;
+    }
     return 0;
 }
 
