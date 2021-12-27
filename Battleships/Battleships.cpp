@@ -263,7 +263,7 @@ void AddToShipBoard(Battleship &config, int playerShipBoard[BOARD_HEIGHT][BOARD_
     {
         widthIndex = config.posLetter - 'A';
     }
-    else
+    else if (config.posLetter >= 'a' && config.posLetter <= 'j')
     {
         widthIndex = config.posLetter - 'a';
     }
