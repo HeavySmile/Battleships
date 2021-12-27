@@ -18,13 +18,13 @@ int current4TileAmount = 0;
 int current3TileAmount = 0;
 int current2TileAmount = 0;
 
-int player1ShipBoard[BOARD_HEIGHT][BOARD_WIDTH] = { {0}, {0}, {0}, {0}, {0}, {0}, {0}, {0}, {0}, {0} };
-int player2ShipBoard[BOARD_HEIGHT][BOARD_WIDTH] = { {0}, {0}, {0}, {0}, {0}, {0}, {0}, {0}, {0}, {0} };
+int player1ShipBoard[BOARD_HEIGHT][BOARD_WIDTH] = { 0 };
+int player2ShipBoard[BOARD_HEIGHT][BOARD_WIDTH] = { 0 };
 
 struct Battleship
 {
     char posLetter, dirLetter;
-    int posNumber, length;
+    int posNumber = 1, length;
 };
 
 void AssembleString(Battleship config)
@@ -149,6 +149,11 @@ void InputConfigMember(Battleship &config)
         config.posNumber = 0;
         config.posNumber += (buffer[1] - '0') * 10;
         config.posNumber += buffer[2] - '0';
+    }
+
+    if (config.posNumber < 1 || config.posNumber > 10)
+    {
+
     }
 
     cin >> config.dirLetter;
@@ -287,6 +292,87 @@ void AddToShipBoard(Battleship &config, int playerShipBoard[BOARD_HEIGHT][BOARD_
         for (int i = widthIndex; i < widthIndex + config.length; i++)
         {
             playerShipBoard[config.posNumber - 1][i] = 1;
+        }
+    }
+    
+    if (config.dirLetter == 'l' || config.dirLetter == 'L')
+    {
+        while (widthIndex - config.length + 1 < 0)
+        {
+            cout << "Move your ship, it's too long to fit the board" << endl;
+            char answer;
+            cout << "Do you want to change ship position or just length?" << endl;
+            cout << "P / L? : ";
+            cin >> answer;
+            if (answer == 'P' || answer == 'p')
+            {
+                cout << "Input your ship configuration in format A1 R L , where A1 is starting tile, R is direction and L is length: " << endl;
+                InputConfigMember(config);
+            }
+            else
+            {
+                cout << "Input new length : ";
+                cin >> config.length;
+            }
+        }
+
+        for (int i = widthIndex - config.length + 1; i <= widthIndex; i++)
+        {
+            playerShipBoard[config.posNumber - 1][i] = 1;
+        }
+    }
+    
+    if (config.dirLetter == 't' || config.dirLetter == 'T')
+    {
+        while (config.posNumber - config.length < 0)
+        {
+            cout << "Move your ship, it's too long to fit the board" << endl;
+            char answer;
+            cout << "Do you want to change ship position or just length?" << endl;
+            cout << "P / L? : ";
+            cin >> answer;
+            if (answer == 'P' || answer == 'p')
+            {
+                cout << "Input your ship configuration in format A1 R L , where A1 is starting tile, R is direction and L is length: " << endl;
+                InputConfigMember(config);
+            }
+            else
+            {
+                cout << "Input new length : ";
+                cin >> config.length;
+            }
+        }
+
+        for (int i = config.posNumber - 1; i >= config.posNumber - config.length; i--)
+        {
+            playerShipBoard[i][widthIndex] = 1;
+        }
+    }
+    
+    if (config.dirLetter == 'b' || config.dirLetter == 'B')
+    {
+        while (config.posNumber + config.length > BOARD_HEIGHT)
+        {
+            cout << "Move your ship, it's too long to fit the board" << endl;
+            char answer;
+            cout << "Do you want to change ship position or just length?" << endl;
+            cout << "P / L? : ";
+            cin >> answer;
+            if (answer == 'P' || answer == 'p')
+            {
+                cout << "Input your ship configuration in format A1 R L , where A1 is starting tile, R is direction and L is length: " << endl;
+                InputConfigMember(config);
+            }
+            else
+            {
+                cout << "Input new length : ";
+                cin >> config.length;
+            }
+        }
+
+        for (int i = config.posNumber - 1; i < config.posNumber + config.length - 1; i++)
+        {
+            playerShipBoard[i][widthIndex] = 1;
         }
     }
 }
