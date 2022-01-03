@@ -5,21 +5,23 @@
 
 using namespace std;
 
-const int MAX_SHIPS_AMOUNT = 2;
+const int MAX_SHIPS_AMOUNT = 1;
 const int MAX_6TILE_SHIPS_AMOUNT = 1;
 const int MAX_4TILE_SHIPS_AMOUNT = 2;
 const int MAX_3TILE_SHIPS_AMOUNT = 3;
 const int MAX_2TILE_SHIPS_AMOUNT = 4;
 const int BOARD_WIDTH = 10;
 const int BOARD_HEIGHT = 10;
+const int BOARD_SHIP = 1;
+const int BOARD_COLLISION_AREA = 2;
+const int BOARD_BLANKSPACE = 0;
 
 int current6TileAmount = 0;
 int current4TileAmount = 0;
 int current3TileAmount = 0;
 int current2TileAmount = 0;
 
-int player1ShipBoard[BOARD_HEIGHT][BOARD_WIDTH] = { 0 };
-int player2ShipBoard[BOARD_HEIGHT][BOARD_WIDTH] = { 0 };
+
 
 struct Battleship
 {
@@ -255,19 +257,63 @@ void ClearConsole()
     }
 }
 
-void AddToShipBoard(Battleship &config, int playerShipBoard[BOARD_HEIGHT][BOARD_WIDTH])
+int TransformBoardChar(char character)
 {
     int widthIndex = 0;
+    if (character >= 'A' && character <= 'J')
+    {
+        widthIndex = character - 'A';
+    }
+    else if (character >= 'a' && character <= 'j')
+    {
+        widthIndex = character - 'a';
+    }
     
-    if (config.posLetter >= 'A' && config.posLetter <= 'J')
+    return widthIndex;
+}
+
+bool IsColliding(Battleship &config, int playerShipBoard[BOARD_HEIGHT][BOARD_WIDTH])
+{
+    int widthIndex = TransformBoardChar(config.posLetter);
+    int heightIndex = config.length - 1;
+    
+    if (config.dirLetter == 'r' || config.dirLetter == 'R')
     {
-        widthIndex = config.posLetter - 'A';
+        if (widthIndex - 1 >= 0)
+        {
+            if (playerShipBoard[heightIndex][widthIndex - 1] != 0)
+            {
+                return false;
+            }
+        }
+        
+        if (widthIndex + config.length + 1 < BOARD_WIDTH)
+        {
+            if (playerShipBoard[heightIndex][widthIndex + config.length + 1] != 0)
+            {
+                return false;
+            }
+        }
+        
+        if (heightIndex - 1 >= 0)
+        {
+            if (playerShipBoard[heightIndex][widthIndex + config.length + 1] != 0)
+            {
+                return false;
+            }
+        }
+
+        for (int i = widthIndex; i < config.length; i++)
+        {
+            
+        }
     }
-    else if (config.posLetter >= 'a' && config.posLetter <= 'j')
-    {
-        widthIndex = config.posLetter - 'a';
-    }
-   
+}
+
+void AddToShipBoard(Battleship config, int playerShipBoard[BOARD_HEIGHT][BOARD_WIDTH])
+{
+    int widthIndex = TransformBoardChar(config.posLetter);
+    
     if (config.dirLetter == 'r' || config.dirLetter == 'R')
     {
         while (widthIndex + config.length > BOARD_WIDTH)
@@ -291,7 +337,7 @@ void AddToShipBoard(Battleship &config, int playerShipBoard[BOARD_HEIGHT][BOARD_
         
         for (int i = widthIndex; i < widthIndex + config.length; i++)
         {
-            playerShipBoard[config.posNumber - 1][i] = 1;
+            playerShipBoard[config.posNumber - 1][i] = BOARD_SHIP;
         }
     }
     
@@ -318,7 +364,7 @@ void AddToShipBoard(Battleship &config, int playerShipBoard[BOARD_HEIGHT][BOARD_
 
         for (int i = widthIndex - config.length + 1; i <= widthIndex; i++)
         {
-            playerShipBoard[config.posNumber - 1][i] = 1;
+            playerShipBoard[config.posNumber - 1][i] = BOARD_SHIP;
         }
     }
     
@@ -345,7 +391,7 @@ void AddToShipBoard(Battleship &config, int playerShipBoard[BOARD_HEIGHT][BOARD_
 
         for (int i = config.posNumber - 1; i >= config.posNumber - config.length; i--)
         {
-            playerShipBoard[i][widthIndex] = 1;
+            playerShipBoard[i][widthIndex] = BOARD_SHIP;
         }
     }
     
@@ -372,9 +418,63 @@ void AddToShipBoard(Battleship &config, int playerShipBoard[BOARD_HEIGHT][BOARD_
 
         for (int i = config.posNumber - 1; i < config.posNumber + config.length - 1; i++)
         {
-            playerShipBoard[i][widthIndex] = 1;
+            playerShipBoard[i][widthIndex] = BOARD_SHIP;
         }
     }
+}
+
+void AddShipCollision(Battleship config, int playerShipBoard[BOARD_HEIGHT][BOARD_WIDTH])
+{
+    int x1, y1, x2, y2;
+
+
+    
+    
+    if (config.dirLetter == 'r' || config.dirLetter == 'R')
+    {
+        x1 = TransformBoardChar(config.posLetter) - 1;
+        y1 = config.posNumber - 2;
+        x2 = x1 + config.length + 1;
+        y2 = y1 + 2;
+    }
+    
+    if (config.dirLetter == 'l' || config.dirLetter == 'L')
+    {
+        x1 = TransformBoardChar(config.posLetter) - config.length;
+        y1 = config.posNumber - 2;
+        x2 = TransformBoardChar(config.posLetter) + 1;
+        y2 = config.posNumber;
+    }
+    
+    if (config.dirLetter == 't' || config.dirLetter == 't')
+    {
+        x1 = TransformBoardChar(config.posLetter) - 1;
+        y1 = config.posNumber - config.length - 1;
+        x2 = TransformBoardChar(config.posLetter) + 1;
+        y2 = config.posNumber;
+    }
+
+    if (config.dirLetter == 't' || config.dirLetter == 't')
+    {
+        x1 = TransformBoardChar(config.posLetter) - 1;
+        y1 = config.posNumber - config.length - 1;
+        x2 = TransformBoardChar(config.posLetter) + 1;
+        y2 = config.posNumber;
+    }
+    
+    for (int i = y1; i <= y2; i++)
+    {
+        for (int j = x1; j <= x2; j++)
+        {
+            if (i >= 0 && j >= 0 && i < BOARD_HEIGHT && j < BOARD_HEIGHT)
+            {
+                playerShipBoard[i][j] = BOARD_COLLISION_AREA;
+            }
+        }
+    }
+    
+
+    AddToShipBoard(config, playerShipBoard);
 }
 
 void PlayerStart(Battleship configPlayer[], string playerName, int playerShipBoard[BOARD_HEIGHT][BOARD_WIDTH])
@@ -422,9 +522,14 @@ int main()
     Battleship configPlayer1[MAX_SHIPS_AMOUNT] = {};
     Battleship configPlayer2[MAX_SHIPS_AMOUNT] = {};
     
-    PlayerStart(configPlayer1, "PLAYER 1", player1ShipBoard);
-   // PlayerStart(configPlayer2, "PLAYER 2", player2ShipBoard);
+    int player1ShipBoard[BOARD_HEIGHT][BOARD_WIDTH] = { 0 };
+    int player2ShipBoard[BOARD_HEIGHT][BOARD_WIDTH] = { 0 };
+   
     
+     PlayerStart(configPlayer1, "PLAYER 1", player1ShipBoard);
+   // PlayerStart(configPlayer2, "PLAYER 2", player2ShipBoard);
+     AddShipCollision(configPlayer1[0], player1ShipBoard);
+
     cout << endl;
     for (int i = 0; i < BOARD_HEIGHT; i++)
     {
