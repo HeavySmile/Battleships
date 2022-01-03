@@ -272,42 +272,13 @@ int TransformBoardChar(char character)
     return widthIndex;
 }
 
-bool IsColliding(Battleship &config, int playerShipBoard[BOARD_HEIGHT][BOARD_WIDTH])
+bool IsColliding(Battleship config, int playerShipBoard[BOARD_HEIGHT][BOARD_WIDTH])
 {
     int widthIndex = TransformBoardChar(config.posLetter);
-    int heightIndex = config.length - 1;
+    int heightIndex =  config.posNumber - 1;
     
-    if (config.dirLetter == 'r' || config.dirLetter == 'R')
-    {
-        if (widthIndex - 1 >= 0)
-        {
-            if (playerShipBoard[heightIndex][widthIndex - 1] != 0)
-            {
-                return false;
-            }
-        }
-        
-        if (widthIndex + config.length + 1 < BOARD_WIDTH)
-        {
-            if (playerShipBoard[heightIndex][widthIndex + config.length + 1] != 0)
-            {
-                return false;
-            }
-        }
-        
-        if (heightIndex - 1 >= 0)
-        {
-            if (playerShipBoard[heightIndex][widthIndex + config.length + 1] != 0)
-            {
-                return false;
-            }
-        }
-
-        for (int i = widthIndex; i < config.length; i++)
-        {
-            
-        }
-    }
+    return false;
+    
 }
 
 void AddToShipBoard(Battleship config, int playerShipBoard[BOARD_HEIGHT][BOARD_WIDTH])
@@ -425,7 +396,7 @@ void AddToShipBoard(Battleship config, int playerShipBoard[BOARD_HEIGHT][BOARD_W
 
 void AddShipCollision(Battleship config, int playerShipBoard[BOARD_HEIGHT][BOARD_WIDTH])
 {
-    int x1, y1, x2, y2;
+    int x1 = 0, y1 = 0, x2 = 0, y2 = 0;
 
 
     
@@ -446,7 +417,7 @@ void AddShipCollision(Battleship config, int playerShipBoard[BOARD_HEIGHT][BOARD
         y2 = config.posNumber;
     }
     
-    if (config.dirLetter == 't' || config.dirLetter == 't')
+    if (config.dirLetter == 't' || config.dirLetter == 'T')
     {
         x1 = TransformBoardChar(config.posLetter) - 1;
         y1 = config.posNumber - config.length - 1;
@@ -454,12 +425,12 @@ void AddShipCollision(Battleship config, int playerShipBoard[BOARD_HEIGHT][BOARD
         y2 = config.posNumber;
     }
 
-    if (config.dirLetter == 't' || config.dirLetter == 't')
+    if (config.dirLetter == 'b' || config.dirLetter == 'B')
     {
         x1 = TransformBoardChar(config.posLetter) - 1;
-        y1 = config.posNumber - config.length - 1;
+        y1 = config.posNumber - 2;
         x2 = TransformBoardChar(config.posLetter) + 1;
-        y2 = config.posNumber;
+        y2 = config.posNumber + config.length - 1;
     }
     
     for (int i = y1; i <= y2; i++)
