@@ -5,7 +5,7 @@
 
 using namespace std;
 
-const int MAX_SHIPS_AMOUNT = 1;
+const int MAX_SHIPS_AMOUNT = 4;
 const int MAX_6TILE_SHIPS_AMOUNT = 1;
 const int MAX_4TILE_SHIPS_AMOUNT = 2;
 const int MAX_3TILE_SHIPS_AMOUNT = 3;
@@ -182,7 +182,75 @@ void InputConfigMember(Battleship &config)
     }
 }
 
-void CorrectConfig(Battleship &config)
+int TransformBoardChar(char character)
+{
+    int widthIndex = 0;
+    if (character >= 'A' && character <= 'J')
+    {
+        widthIndex = character - 'A';
+    }
+    else if (character >= 'a' && character <= 'j')
+    {
+        widthIndex = character - 'a';
+    }
+
+    return widthIndex;
+}
+
+bool IsColliding(Battleship config, int playerShipBoard[BOARD_HEIGHT][BOARD_WIDTH])
+{
+    int widthIndex = TransformBoardChar(config.posLetter);
+    int heightIndex = config.posNumber - 1;
+
+    if (config.dirLetter == 'r' || config.dirLetter == 'R')
+    {
+        for (int i = widthIndex; i < widthIndex + config.length; i++)
+        {
+            if (playerShipBoard[heightIndex][widthIndex] == 2)
+            {
+                return true;
+            }
+        }
+    }
+
+    if (config.dirLetter == 'l' || config.dirLetter == 'L')
+    {
+        for (int i = widthIndex; i > widthIndex - config.length; i--)
+        {
+            if (playerShipBoard[heightIndex][widthIndex] == 2)
+            {
+                return true;
+            }
+        }
+    }
+
+    if (config.dirLetter == 't' || config.dirLetter == 'T')
+    {
+        for (int i = heightIndex; i > heightIndex - config.length; i--)
+        {
+            if (playerShipBoard[heightIndex][widthIndex] == 2)
+            {
+                return true;
+            }
+        }
+    }
+
+    if (config.dirLetter == 'b' || config.dirLetter == 'B')
+    {
+        for (int i = heightIndex; i < heightIndex + config.length; i++)
+        {
+            if (playerShipBoard[heightIndex][widthIndex] == 2)
+            {
+                return true;
+            }
+        }
+    }
+
+    return false;
+
+}
+
+void CorrectConfig(Battleship &config, int playerShipBoard[BOARD_HEIGHT][BOARD_WIDTH])
 {
     char posLetter = config.posLetter;
     char dirLetter = config.dirLetter;
@@ -239,6 +307,22 @@ void CorrectConfig(Battleship &config)
         trigger = true;
     }
 
+    if (IsColliding(config, playerShipBoard))
+    {
+        cout << "Your ship is colliding with previous inputed ships" << endl;
+        cout << "Please input valid position";
+        
+        switch (config.length)
+        {
+            case 2: current2TileAmount--; break;
+            case 3: current3TileAmount--; break;
+            case 4: current4TileAmount--; break;
+            case 6: current6TileAmount--; break;
+        }
+        
+        trigger = true;
+    }
+
     if (trigger)
     {
         cout << "Position to edit : ";
@@ -255,30 +339,6 @@ void ClearConsole()
     {
         cout << endl;
     }
-}
-
-int TransformBoardChar(char character)
-{
-    int widthIndex = 0;
-    if (character >= 'A' && character <= 'J')
-    {
-        widthIndex = character - 'A';
-    }
-    else if (character >= 'a' && character <= 'j')
-    {
-        widthIndex = character - 'a';
-    }
-    
-    return widthIndex;
-}
-
-bool IsColliding(Battleship config, int playerShipBoard[BOARD_HEIGHT][BOARD_WIDTH])
-{
-    int widthIndex = TransformBoardChar(config.posLetter);
-    int heightIndex =  config.posNumber - 1;
-    
-    return false;
-    
 }
 
 void AddToShipBoard(Battleship config, int playerShipBoard[BOARD_HEIGHT][BOARD_WIDTH])
@@ -398,9 +458,6 @@ void AddShipCollision(Battleship config, int playerShipBoard[BOARD_HEIGHT][BOARD
 {
     int x1 = 0, y1 = 0, x2 = 0, y2 = 0;
 
-
-    
-    
     if (config.dirLetter == 'r' || config.dirLetter == 'R')
     {
         x1 = TransformBoardChar(config.posLetter) - 1;
@@ -471,11 +528,14 @@ void PlayerStart(Battleship configPlayer[], string playerName, int playerShipBoa
         for (int i = 0; i < MAX_SHIPS_AMOUNT; i++)
         {
             InputConfigMember(configPlayer[i]);
-            while (!CheckConfig(configPlayer[i]))
+            while (!CheckConfig(configPlayer[i]) || IsColliding(configPlayer[i], playerShipBoard))
             {
-                CorrectConfig(configPlayer[i]);
+                CorrectConfig(configPlayer[i], playerShipBoard);
             }
-            AddToShipBoard(configPlayer[i], playerShipBoard);
+            
+            AddShipCollision(configPlayer[i], playerShipBoard);
+            
+            
         }
     }
 
@@ -498,8 +558,8 @@ int main()
    
     
      PlayerStart(configPlayer1, "PLAYER 1", player1ShipBoard);
-   // PlayerStart(configPlayer2, "PLAYER 2", player2ShipBoard);
-     AddShipCollision(configPlayer1[0], player1ShipBoard);
+     //PlayerStart(configPlayer2, "PLAYER 2", player2ShipBoard);
+     
 
     cout << endl;
     for (int i = 0; i < BOARD_HEIGHT; i++)
