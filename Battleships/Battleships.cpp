@@ -1,11 +1,13 @@
-
+﻿
 #include <iostream>
 #include <string>
 #include <fstream>
+#include <io.h>
+#include <fcntl.h>
 
 using namespace std;
 
-const int MAX_SHIPS_AMOUNT = 4;
+const int MAX_SHIPS_AMOUNT = 1;
 const int MAX_6TILE_SHIPS_AMOUNT = 1;
 const int MAX_4TILE_SHIPS_AMOUNT = 2;
 const int MAX_3TILE_SHIPS_AMOUNT = 3;
@@ -428,7 +430,7 @@ void AddToShipBoard(Battleship config, int playerShipBoard[BOARD_HEIGHT][BOARD_W
     
     if (config.dirLetter == 'b' || config.dirLetter == 'B')
     {
-        while (config.posNumber + config.length > BOARD_HEIGHT)
+        while (config.posNumber + config.length - 1 > BOARD_HEIGHT)
         {
             cout << "Move your ship, it's too long to fit the board" << endl;
             char answer;
@@ -500,9 +502,7 @@ void AddShipCollision(Battleship config, int playerShipBoard[BOARD_HEIGHT][BOARD
             }
         }
     }
-    
-
-    AddToShipBoard(config, playerShipBoard);
+  
 }
 
 void PlayerStart(Battleship configPlayer[], string playerName, int playerShipBoard[BOARD_HEIGHT][BOARD_WIDTH])
@@ -534,7 +534,7 @@ void PlayerStart(Battleship configPlayer[], string playerName, int playerShipBoa
             }
             
             AddShipCollision(configPlayer[i], playerShipBoard);
-            
+            AddToShipBoard(configPlayer[i], playerShipBoard);
             
         }
     }
@@ -545,7 +545,45 @@ void PlayerStart(Battleship configPlayer[], string playerName, int playerShipBoa
     current2TileAmount = 0;
 }
 
-
+void DisplayBoard(int playerShipBoard[BOARD_HEIGHT][BOARD_WIDTH])
+{
+    
+    for (int i = 0; i < BOARD_HEIGHT; i++)
+    {
+        for (int j = 0; j < BOARD_WIDTH; j++)
+        {
+            if (i == 0)
+            {
+                cout << "═══╦═══╦═══╦═══╦═══╦═══╦═══╦═══╦═══╦═══╗" << endl;
+                for (int k = 0; k < BOARD_WIDTH; k++)
+                {
+                    cout << "║ " << playerShipBoard[i][j] << " ";
+                    if (k == BOARD_WIDTH - 1)
+                    {
+                        cout << "║";
+                    }
+                }
+            }
+            else
+            {
+                cout << "╠═══╬═══╬═══╬═══╬═══╬═══╬═══╬═══╬═══╬═══╣" << endl;
+                for (int k = 0; k < BOARD_WIDTH; k++)
+                {
+                    cout << "║ " << playerShipBoard[i][j] << " ";
+                    if (k == BOARD_WIDTH - 1)
+                    {
+                        cout << "║";
+                    }
+                }
+            }
+            
+            if (i == BOARD_HEIGHT - 1)
+            {
+                cout << "╚═══╩═══╩═══╩═══╩═══╩═══╩═══╩═══╩═══╩═══╝" << endl;
+            }
+        }
+    }
+}
 
 int main()
 {
@@ -557,19 +595,12 @@ int main()
     int player2ShipBoard[BOARD_HEIGHT][BOARD_WIDTH] = { 0 };
    
     
-     PlayerStart(configPlayer1, "PLAYER 1", player1ShipBoard);
-     //PlayerStart(configPlayer2, "PLAYER 2", player2ShipBoard);
+    PlayerStart(configPlayer1, "PLAYER 1", player1ShipBoard);
+    //PlayerStart(configPlayer2, "PLAYER 2", player2ShipBoard);
      
-
-    cout << endl;
-    for (int i = 0; i < BOARD_HEIGHT; i++)
-    {
-        for (int j = 0; j < BOARD_WIDTH; j++)
-        {
-            cout << player1ShipBoard[i][j] << " ";
-        }
-        cout << endl;
-    }
+    
+    
+    DisplayBoard(player1ShipBoard);
     return 0;
 }
 
