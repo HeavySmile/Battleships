@@ -95,46 +95,6 @@ bool CheckConfig(Battleship config)
     return true;
 }
 
-void GetConfigFromFile(Battleship config[], string filePath)
-{
-    fstream userFile;
-    userFile.open(filePath, fstream::in);
-    
-    if (userFile.is_open() == false) {
-
-        cout << "Failed to open file";
-    }
-    string buffer;
-
-    for (int i = 0; i < MAX_SHIPS_AMOUNT; i++)
-    {
-        // C:\\Users\\lenya\\Documents\\Battleships.txt
-        getline(userFile, buffer);
-        if (buffer.length() < 6)
-        {
-            config[i].posLetter = buffer[0];
-            
-            if (buffer.length() == 6)
-            {
-                config[i].posNumber = buffer[1] - '0';
-                config[i].dirLetter = buffer[3];
-                config[i].length = buffer[5];
-            }
-            else if (buffer.length() == 7)
-            {
-                config[i].posNumber = 0;
-                config[i].posNumber += (buffer[1] - '0') * 10;
-                config[i].posNumber += buffer[2] - '0';
-                config[i].dirLetter = buffer[4];
-                config[i].length = buffer[6];
-            }
-            
-        }
-
-    }
-    userFile.close();
-}
-
 void InputConfigMember(Battleship &config)
 {
     char buffer[4];
@@ -376,7 +336,9 @@ void AddToShipBoard(Battleship config, int playerShipBoard[BOARD_HEIGHT][BOARD_W
     {
         while (widthIndex - config.length + 1 < 0)
         {
-            cout << "Move your ship, it's too long to fit the board" << endl;
+            cout << "Move your ship at position "; 
+            cout << config.posLetter << config.posNumber << " " << config.dirLetter << " " << config.length << endl;
+            cout << "It's too long to fit the board" << endl;
             char answer;
             cout << "Do you want to change ship position or just length?" << endl;
             cout << "P / L? : ";
@@ -505,6 +467,7 @@ void AddShipCollision(Battleship config, int playerShipBoard[BOARD_HEIGHT][BOARD
 
 void DisplayBoard(int playerShipBoard[BOARD_HEIGHT][BOARD_WIDTH])
 {
+    cout << endl;
     cout << "      A B C D E F G H I J" << endl;
     cout << "      ___________________" << endl;
     for (int i = 0; i < BOARD_HEIGHT; i++)
@@ -536,6 +499,48 @@ void DisplayBoard(int playerShipBoard[BOARD_HEIGHT][BOARD_WIDTH])
     }
 }
 
+void GetConfigFromFile(Battleship config[], string filePath, int playerShipBoard[BOARD_HEIGHT][BOARD_WIDTH])
+{
+    fstream userFile;
+    userFile.open(filePath, fstream::in);
+
+    if (userFile.is_open() == false) {
+
+        cout << "Failed to open file";
+    }
+    string buffer;
+
+    for (int i = 0; getline(userFile, buffer) && i < MAX_SHIPS_AMOUNT ; i++)
+    {
+        // C:\\Users\\lenya\\Documents\\Battleships.txt
+        if (buffer.length() == 6 || buffer.length() == 7)
+        {
+            config[i].posLetter = buffer[0];
+            if (buffer.length() == 6)
+            {
+                config[i].posNumber = buffer[1] - '0';
+                config[i].dirLetter = buffer[3];
+                config[i].length = buffer[5] - '0';
+            }
+            else if (buffer.length() == 7)
+            {
+                config[i].posNumber = 0;
+                config[i].posNumber += (buffer[1] - '0') * 10;
+                config[i].posNumber += buffer[2] - '0';
+                config[i].dirLetter = buffer[4];
+                config[i].length = buffer[6] - '0';
+            }
+
+        }
+        
+        //cout << config[i].posLetter << config[i].posNumber << " " << config[i].dirLetter << " " << config[i].length << endl;
+        AddShipCollision(config[i], playerShipBoard);
+        AddToShipBoard(config[i], playerShipBoard);
+
+    }
+    userFile.close();
+}
+
 void PlayerStart(Battleship configPlayer[], string playerName, int playerShipBoard[BOARD_HEIGHT][BOARD_WIDTH])
 {
     char answer;
@@ -551,7 +556,8 @@ void PlayerStart(Battleship configPlayer[], string playerName, int playerShipBoa
         string path;
         cout << "Please input file path : ";
         cin >> path;
-        GetConfigFromFile(configPlayer, path);
+        GetConfigFromFile(configPlayer, path, playerShipBoard);
+        DisplayBoard(playerShipBoard);
     }
     else
     {
@@ -577,6 +583,7 @@ void PlayerStart(Battleship configPlayer[], string playerName, int playerShipBoa
     current3TileAmount = 0;
     current2TileAmount = 0;
 }
+
 
 //void DisplayBoard(int playerShipBoard[BOARD_HEIGHT][BOARD_WIDTH])
 //{
