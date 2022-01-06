@@ -2,12 +2,10 @@
 #include <iostream>
 #include <string>
 #include <fstream>
-#include <io.h>
-#include <fcntl.h>
 
 using namespace std;
 
-const int MAX_SHIPS_AMOUNT = 4;
+const int MAX_SHIPS_AMOUNT = 10;
 const int MAX_6TILE_SHIPS_AMOUNT = 1;
 const int MAX_4TILE_SHIPS_AMOUNT = 2;
 const int MAX_3TILE_SHIPS_AMOUNT = 3;
@@ -525,7 +523,14 @@ void DisplayBoard(int playerShipBoard[BOARD_HEIGHT][BOARD_WIDTH])
 
         for (int j = 0; j < BOARD_WIDTH; j++)
         {
-            cout << " " << playerShipBoard[i][j];
+            if (playerShipBoard[i][j] == 1)
+            {
+                cout << " X";
+            }
+            else
+            {
+                cout << " *";
+            }
         }
         cout << endl;
     }
