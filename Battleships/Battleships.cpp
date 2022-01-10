@@ -5,7 +5,7 @@
 
 using namespace std;
 
-const int MAX_SHIPS_AMOUNT = 10;
+const int MAX_SHIPS_AMOUNT = 1;
 const int MAX_6TILE_SHIPS_AMOUNT = 1;
 const int MAX_4TILE_SHIPS_AMOUNT = 2;
 const int MAX_3TILE_SHIPS_AMOUNT = 3;
@@ -20,8 +20,6 @@ int current6TileAmount = 0;
 int current4TileAmount = 0;
 int current3TileAmount = 0;
 int current2TileAmount = 0;
-
-
 
 struct Battleship
 {
@@ -97,30 +95,25 @@ bool CheckConfig(Battleship config)
 
 void InputConfigMember(Battleship &config)
 {
-    char buffer[4];
+    string buffer;
     cin >> buffer;
    
-    config.posLetter = (int)buffer[0];
+    config.posLetter = buffer[0];
 
-    if (myStrlen(buffer) == 2)
+    if (buffer.length() == 2)
     {
         config.posNumber = buffer[1] - '0';
     }
-    else if (myStrlen(buffer) == 3)
+    else if (buffer.length() == 3)
     {
         config.posNumber = 0;
         config.posNumber += (buffer[1] - '0') * 10;
         config.posNumber += buffer[2] - '0';
     }
 
-    if (config.posNumber < 1 || config.posNumber > 10)
-    {
-
-    }
-
     cin >> config.dirLetter;
     cin >> config.length;
-
+    
     if (config.length == 6)
     {
         current6TileAmount++;
@@ -216,7 +209,6 @@ void CorrectConfig(Battleship &config, int playerShipBoard[BOARD_HEIGHT][BOARD_W
     char dirLetter = config.dirLetter;
     bool trigger = false;
 
-    cout << endl;
     if ((posLetter < 'A' || posLetter > 'J') && (posLetter < 'a' || posLetter > 'j'))
     {
         cout << "Please input valid position character from A to J" << endl;
@@ -285,6 +277,7 @@ void CorrectConfig(Battleship &config, int playerShipBoard[BOARD_HEIGHT][BOARD_W
 
     if (trigger)
     {
+        cout << endl;
         cout << "Position to edit : ";
         AssembleString(config);
         cout << endl;
@@ -301,124 +294,165 @@ void ClearConsole()
     }
 }
 
-void AddToShipBoard(Battleship config, int playerShipBoard[BOARD_HEIGHT][BOARD_WIDTH])
+bool CheckShip(Battleship config)
+{
+    int widthIndex = TransformBoardChar(config.posLetter);
+
+    if (config.dirLetter == 'r' || config.dirLetter == 'R')
+    {
+        if (widthIndex + config.length > BOARD_WIDTH)
+        {
+            return false;
+        }
+        else
+        {
+            return true;
+        }
+            
+            /*cout << widthIndex << endl;
+            cout << endl;
+            cout << "Move your ship at position ";
+            cout << config.posLetter << config.posNumber << " " << config.dirLetter << " " << config.length << endl;
+            cout << "It's too long to fit the board" << endl;
+            cout << "Input your ship configuration in format A1 R L , where A1 is starting tile, R is direction and L is length: " << endl;
+            InputConfigMember(config);*/
+      
+        
+    }
+
+    if (config.dirLetter == 'l' || config.dirLetter == 'L')
+    {
+        if (widthIndex - config.length + 1 < 0)
+        {
+            return false;
+        }
+        else
+        {
+            return true;
+        }
+        
+        /* while (widthIndex - config.length + 1 < 0)
+        {
+            cout << widthIndex << endl;
+            cout << endl;
+            cout << "Move your ship at position ";
+            cout << config.posLetter << config.posNumber << " " << config.dirLetter << " " << config.length << endl;
+            cout << "It's too long to fit the board" << endl;
+            cout << "Input your ship configuration in format A1 R L , where A1 is starting tile, R is direction and L is length: " << endl;
+            InputConfigMember(config);
+            widthIndex = TransformBoardChar(config.posLetter);
+        }*/
+
+        
+    }
+
+    if (config.dirLetter == 't' || config.dirLetter == 'T')
+    {
+        if (config.posNumber - config.length < 0)
+        {
+            return false;
+        }
+        else
+        {
+            return true;
+        }
+        
+        /*while (config.posNumber - config.length < 0)
+        {
+            cout << endl;
+            cout << "Move your ship at position ";
+            cout << config.posLetter << config.posNumber << " " << config.dirLetter << " " << config.length << endl;
+            cout << "It's too long to fit the board" << endl;
+            cout << "Input your ship configuration in format A1 R L , where A1 is starting tile, R is direction and L is length: " << endl;
+            InputConfigMember(config);
+            widthIndex = TransformBoardChar(config.posLetter);
+        }*/
+
+        
+    }
+
+    if (config.dirLetter == 'b' || config.dirLetter == 'B')
+    {
+        if (config.posNumber + config.length - 1 > BOARD_HEIGHT)
+        {
+            return false;
+        }
+        else
+        {
+            return true;
+        }
+
+        /*while (config.posNumber + config.length - 1 > BOARD_HEIGHT)
+        {
+            cout << endl;
+            cout << "Move your ship at position ";
+            cout << config.posLetter << config.posNumber << " " << config.dirLetter << " " << config.length << endl;
+            cout << "It's too long to fit the board" << endl;
+            cout << "Input your ship configuration in format A1 R L , where A1 is starting tile, R is direction and L is length: " << endl;
+            InputConfigMember(config);
+            widthIndex = TransformBoardChar(config.posLetter);
+        }*/
+
+        
+    }
+}
+
+void AddToShipBoard(Battleship &config, int playerShipBoard[BOARD_HEIGHT][BOARD_WIDTH])
 {
     int widthIndex = TransformBoardChar(config.posLetter);
     
     if (config.dirLetter == 'r' || config.dirLetter == 'R')
     {
-        while (widthIndex + config.length > BOARD_WIDTH)
-        {
-            cout << "Move your ship, it's too long to fit the board" << endl;
-            char answer;
-            cout << "Do you want to change ship position or just length?" << endl;
-            cout << "P / L? : ";
-            cin >> answer;
-            if (answer == 'P' || answer == 'p')
-            {
-                cout << "Input your ship configuration in format A1 R L , where A1 is starting tile, R is direction and L is length: " << endl;
-                InputConfigMember(config);
-            }
-            else
-            {
-                cout << "Input new length : ";
-                cin >> config.length;
-            }
-        }
-        
         for (int i = widthIndex; i < widthIndex + config.length; i++)
         {
             playerShipBoard[config.posNumber - 1][i] = BOARD_SHIP;
         }
+        return;
     }
     
     if (config.dirLetter == 'l' || config.dirLetter == 'L')
     {
-        while (widthIndex - config.length + 1 < 0)
-        {
-            cout << "Move your ship at position "; 
-            cout << config.posLetter << config.posNumber << " " << config.dirLetter << " " << config.length << endl;
-            cout << "It's too long to fit the board" << endl;
-            char answer;
-            cout << "Do you want to change ship position or just length?" << endl;
-            cout << "P / L? : ";
-            cin >> answer;
-            if (answer == 'P' || answer == 'p')
-            {
-                cout << "Input your ship configuration in format A1 R L , where A1 is starting tile, R is direction and L is length: " << endl;
-                InputConfigMember(config);
-            }
-            else
-            {
-                cout << "Input new length : ";
-                cin >> config.length;
-            }
-        }
-
-        for (int i = widthIndex - config.length + 1; i <= widthIndex; i++)
+        for (int i = widthIndex; i > widthIndex - config.length; i--)
         {
             playerShipBoard[config.posNumber - 1][i] = BOARD_SHIP;
         }
-    }
-    
-    if (config.dirLetter == 't' || config.dirLetter == 'T')
-    {
-        while (config.posNumber - config.length < 0)
-        {
-            cout << "Move your ship, it's too long to fit the board" << endl;
-            char answer;
-            cout << "Do you want to change ship position or just length?" << endl;
-            cout << "P / L? : ";
-            cin >> answer;
-            if (answer == 'P' || answer == 'p')
-            {
-                cout << "Input your ship configuration in format A1 R L , where A1 is starting tile, R is direction and L is length: " << endl;
-                InputConfigMember(config);
-            }
-            else
-            {
-                cout << "Input new length : ";
-                cin >> config.length;
-            }
-        }
-
-        for (int i = config.posNumber - 1; i >= config.posNumber - config.length; i--)
-        {
-            playerShipBoard[i][widthIndex] = BOARD_SHIP;
-        }
+        return;
     }
     
     if (config.dirLetter == 'b' || config.dirLetter == 'B')
     {
-        while (config.posNumber + config.length - 1 > BOARD_HEIGHT)
-        {
-            cout << "Move your ship, it's too long to fit the board" << endl;
-            char answer;
-            cout << "Do you want to change ship position or just length?" << endl;
-            cout << "P / L? : ";
-            cin >> answer;
-            if (answer == 'P' || answer == 'p')
-            {
-                cout << "Input your ship configuration in format A1 R L , where A1 is starting tile, R is direction and L is length: " << endl;
-                InputConfigMember(config);
-            }
-            else
-            {
-                cout << "Input new length : ";
-                cin >> config.length;
-            }
-        }
-
-        for (int i = config.posNumber - 1; i < config.posNumber + config.length - 1; i++)
+        for (int i = config.posNumber - 1; i < config.posNumber - 1 + config.length; i++)
         {
             playerShipBoard[i][widthIndex] = BOARD_SHIP;
         }
+        return;
     }
+    
+    if (config.dirLetter == 't' || config.dirLetter == 'T')
+    {
+        for (int i = config.posNumber - 1; i > config.posNumber - config.length - 1; i--)
+        {
+            playerShipBoard[i][widthIndex] = BOARD_SHIP;
+        }
+        return;
+    }
+
+    
 }
 
-void AddShipCollision(Battleship config, int playerShipBoard[BOARD_HEIGHT][BOARD_WIDTH])
+void AddShipCollision(Battleship &config, int playerShipBoard[BOARD_HEIGHT][BOARD_WIDTH])
 {
     int x1 = 0, y1 = 0, x2 = 0, y2 = 0;
+
+    while (!CheckShip(config))
+    {
+        cout << endl;
+        cout << "Move your ship at position ";
+        cout << config.posLetter << config.posNumber << " " << config.dirLetter << " " << config.length << endl;
+        cout << "It's too long to fit the board" << endl;
+        cout << "Input your ship configuration in format A1 R L , where A1 is starting tile, R is direction and L is length: " << endl;
+        InputConfigMember(config);
+    }
 
     if (config.dirLetter == 'r' || config.dirLetter == 'R')
     {
@@ -490,6 +524,10 @@ void DisplayBoard(int playerShipBoard[BOARD_HEIGHT][BOARD_WIDTH])
             {
                 cout << " X";
             }
+            else if (playerShipBoard[i][j] == 2)
+            {
+                cout << " !";
+            }
             else
             {
                 cout << " *";
@@ -532,7 +570,8 @@ void GetConfigFromFile(Battleship config[], string filePath, int playerShipBoard
             }
 
         }
-        
+        //while (!CheckConfig());
+        CorrectConfig(config[i], playerShipBoard);
         //cout << config[i].posLetter << config[i].posNumber << " " << config[i].dirLetter << " " << config[i].length << endl;
         AddShipCollision(config[i], playerShipBoard);
         AddToShipBoard(config[i], playerShipBoard);
@@ -553,10 +592,10 @@ void PlayerStart(Battleship configPlayer[], string playerName, int playerShipBoa
     cin >> answer;
     if (answer == 'Y' || answer == 'y')
     {
-        string path;
+        //string path;
         cout << "Please input file path : ";
-        cin >> path;
-        GetConfigFromFile(configPlayer, path, playerShipBoard);
+       // cin >> path;
+        GetConfigFromFile(configPlayer, "C:\\Users\\lenya\\Documents\\Battleships.txt", playerShipBoard);
         DisplayBoard(playerShipBoard);
     }
     else
@@ -565,6 +604,7 @@ void PlayerStart(Battleship configPlayer[], string playerName, int playerShipBoa
         for (int i = 0; i < MAX_SHIPS_AMOUNT; i++)
         {
             cout << endl;
+            cout << "Input ship " << i + 1 << " : ";
             InputConfigMember(configPlayer[i]);
             while (!CheckConfig(configPlayer[i]) || IsColliding(configPlayer[i], playerShipBoard))
             {
@@ -574,8 +614,8 @@ void PlayerStart(Battleship configPlayer[], string playerName, int playerShipBoa
             AddShipCollision(configPlayer[i], playerShipBoard);
             AddToShipBoard(configPlayer[i], playerShipBoard);
             cout << endl;
-            DisplayBoard(playerShipBoard);
         }
+        DisplayBoard(playerShipBoard);
     }
 
     current6TileAmount = 0;
@@ -584,6 +624,10 @@ void PlayerStart(Battleship configPlayer[], string playerName, int playerShipBoa
     current2TileAmount = 0;
 }
 
+void GameStart(int player1ShipBoard[BOARD_HEIGHT][BOARD_WIDTH], int player2ShipBoard[BOARD_HEIGHT][BOARD_WIDTH])
+{
+
+}
 
 //void DisplayBoard(int playerShipBoard[BOARD_HEIGHT][BOARD_WIDTH])
 //{
@@ -634,10 +678,11 @@ int main()
     int player1ShipBoard[BOARD_HEIGHT][BOARD_WIDTH] = { 0 };
     int player2ShipBoard[BOARD_HEIGHT][BOARD_WIDTH] = { 0 };
    
-    
+   
     PlayerStart(configPlayer1, "PLAYER 1", player1ShipBoard);
-    //PlayerStart(configPlayer2, "PLAYER 2", player2ShipBoard);
+    PlayerStart(configPlayer2, "PLAYER 2", player2ShipBoard);
     
+
     return 0;
 }
 
