@@ -59,6 +59,7 @@ struct Battleship
     int posNumber, length;
 
     Point shipCoordinates[6] = {};
+    Point hitCoordinates[6] = {};
 
     void PrintConfig()
     {
@@ -344,9 +345,36 @@ struct Battleship
 
     bool IsShipSunk()
     {
-        
+        for (int i = 0; i < length; i++)
+        {
+            if (shipCoordinates[i].x != -1 && shipCoordinates[i].y != -1)
+            {
+                return false;
+            }
+        }
+        return true;
     }
 
+    void AddHitCollision(int playerHitBoard[][BOARD_WIDTH])
+    {
+        int x1 = hitCoordinates[0].x - 1;
+        int y1 = hitCoordinates[0].y - 1;
+        int x2 = hitCoordinates[length - 1].x + 1;
+        int y2 = hitCoordinates[length - 1].y + 1;
+
+        for (int i = x1; i <= x2; i++)
+        {
+            for (int j = y1; j <= y2; j++)
+            {
+                if (i >= 0 && j >= 0 && i < BOARD_HEIGHT && j < BOARD_HEIGHT)
+                {
+                    playerHitBoard[i][j] = BOARD_COLLISION_AREA;
+                }
+            }
+        }
+
+    }
+    
     void AddShipCollision(int playerShipBoard[][BOARD_WIDTH])
     {
         int x1 = shipCoordinates[0].x - 1;
@@ -367,6 +395,16 @@ struct Battleship
 
     }
 
+    void AddToHitBoard(int playerHitBoard[][BOARD_WIDTH])
+    {
+        for (int i = 0; i < length; i++)
+        {
+            int x = hitCoordinates[i].x;
+            int y = hitCoordinates[i].y;
+            playerHitBoard[x][y] = BOARD_SHIP;
+        }
+    }
+
     void AddToShipBoard(int playerShipBoard[][BOARD_WIDTH])
     {
         for (int i = 0; i < length; i++)
@@ -378,7 +416,7 @@ struct Battleship
     }
 };
  
-int GetIndShipHit(Battleship config[], Point hitPoint)
+int GetHitShipIdx(Battleship config[], Point hitPoint)
 {
     
     for (int i = 0; i < MAX_SHIPS_AMOUNT; i++)
@@ -446,12 +484,11 @@ void DisplayBoard(int playerShipBoard[][BOARD_WIDTH])
                 case BOARD_HIT:
                     std::cout << " H";
                     break;
-                case BOARD_BLANKSPACE:
-                    std::cout << " *";
-                    break;
                 case BOARD_FAIL_HIT:
                     std::cout << " F";
                     break;
+                default:
+                    std::cout << " *"; break;
             }
         }
         std::cout << endl;
@@ -490,12 +527,11 @@ void Display2Boards(int playerShipBoard[][BOARD_WIDTH], int playerHitBoard[][BOA
                 case BOARD_HIT:
                     std::cout << " H";
                     break;
-                case BOARD_BLANKSPACE:
-                    std::cout << " *";
-                    break;
                 case BOARD_FAIL_HIT:
                     std::cout << " F";
                     break;
+                default:
+                    std::cout << " *"; break;
             }
         }
         
@@ -525,12 +561,11 @@ void Display2Boards(int playerShipBoard[][BOARD_WIDTH], int playerHitBoard[][BOA
                 case BOARD_HIT:
                     std::cout << " H";
                     break;
-                case BOARD_BLANKSPACE:
-                    std::cout << " *";
-                    break;
                 case BOARD_FAIL_HIT:
                     std::cout << " F";
                     break;
+                default:
+                    std::cout << " *"; break;
             }
         }
         std::cout << endl;
@@ -658,7 +693,7 @@ void PlayerStart(Battleship configPlayer[], string playerName, int playerShipBoa
 bool PlayerTurn(string playerName, Battleship config[], int playerShipBoard[][BOARD_WIDTH], int playerHitBoard[][BOARD_WIDTH], int enemyShipBoard[][BOARD_WIDTH])
 {
     string buffer;
-    int x = 0, y = 0;
+    Point hitPoint;
     ClearConsole();
     std::cout << endl;
     std::cout << "________________________________" << endl;
@@ -672,26 +707,51 @@ bool PlayerTurn(string playerName, Battleship config[], int playerShipBoard[][BO
     std::cin >> buffer;
     if (buffer.length() == 2)
     {
-        x = buffer[1] - '0' - 1;
-        y = TransformBoardChar(buffer[0]);
+        hitPoint.x = buffer[1] - '0' - 1;
+        hitPoint.y = TransformBoardChar(buffer[0]);
     }
     else if (buffer.length() == 3)
     {
-        x = BOARD_WIDTH - 1;
-        y = TransformBoardChar(buffer[0]);
+        hitPoint.x = BOARD_WIDTH - 1;
+        hitPoint.y = TransformBoardChar(buffer[0]);
     }
     
-    if (enemyShipBoard[x][y] == BOARD_SHIP)
+    if (enemyShipBoard[hitPoint.x][hitPoint.y] == BOARD_SHIP)
     {
-        playerHitBoard[x][y] = BOARD_HIT;
-        enemyShipBoard[x][y] = BOARD_HIT;
+        playerHitBoard[hitPoint.x][hitPoint.y] = BOARD_HIT;
+        enemyShipBoard[hitPoint.x][hitPoint.y] = BOARD_HIT;
         
+        int hitShipIdx = GetHitShipIdx(config, hitPoint);
+        for (int i = 0; i < config[hitShipIdx].length; i++)
+        {
+            if (config[hitShipIdx].shipCoordinates[i].x == hitPoint.x && config[hitShipIdx].shipCoordinates[i].y == hitPoint.y)
+            {
+                config[hitShipIdx].hitCoordinates[i].x = config[hitShipIdx].shipCoordinates[i].x;
+                config[hitShipIdx].hitCoordinates[i].y = config[hitShipIdx].shipCoordinates[i].y;
+                config[hitShipIdx].shipCoordinates[i].x = -1;
+                config[hitShipIdx].shipCoordinates[i].y = -1;
+            }
+        }
+
+        if (config[hitShipIdx].IsShipSunk())
+        {
+            switch (config[hitShipIdx].length)
+            {
+                case 2: current2TileAmount--; break;
+                case 3: current3TileAmount--; break;
+                case 4: current4TileAmount--; break;
+                case 6: current6TileAmount--; break;
+            }
+            config[hitShipIdx].AddHitCollision(playerHitBoard);
+            config[hitShipIdx].AddToHitBoard(playerHitBoard);
+        }
+       
 
         return true;
     }
     else
     {
-        playerHitBoard[x][y] = BOARD_FAIL_HIT;
+        playerHitBoard[hitPoint.x][hitPoint.y] = BOARD_FAIL_HIT;
         return false;
     }
     
