@@ -1,11 +1,13 @@
 ﻿
 #include <iostream>
+#include <cstring>
 #include <string>
 #include <fstream>
 
 using namespace std;
 
 const int MAX_SHIPS_AMOUNT = 2;
+const int MAX_SHIP_SIZE = 6;
 const int MAX_6TILE_SHIPS_AMOUNT = 1;
 const int MAX_4TILE_SHIPS_AMOUNT = 2;
 const int MAX_3TILE_SHIPS_AMOUNT = 3;
@@ -50,11 +52,11 @@ bool DoesPointExist(Point p)
 
 struct Battleship
 {
-    char posLetter, dirLetter;
-    int posNumber, length;
+    char posLetter = ' ', dirLetter = ' ';
+    int posNumber = -1, length = 0;
 
-    Point shipCoordinates[6] = {};
-    Point hitCoordinates[6] = {};
+    Point shipCoordinates[MAX_SHIP_SIZE] = {};
+    Point hitCoordinates[MAX_SHIP_SIZE] = {};
 
     void PrintConfig()
     {
@@ -113,7 +115,7 @@ struct Battleship
     {
         string buffer = " ";
         std::cin >> buffer;
-
+        
         posLetter = buffer[0];
         if (buffer.length() == 2)
         {
@@ -131,10 +133,18 @@ struct Battleship
 
         switch (length)
         {
-        case 2: twoTileShips++; break;
-        case 3: threeTileShips++; break;
-        case 4: fourTileShips++; break;
-        case 6: sixTileShips++; break;
+            case 2: 
+                twoTileShips++; 
+                break;
+            case 3: 
+                threeTileShips++; 
+                break;
+            case 4: 
+                fourTileShips++; 
+                break;
+            case 6: 
+                sixTileShips++; 
+                break;
         }
     }
 
@@ -188,6 +198,15 @@ struct Battleship
             }
         }
 
+    }
+
+    void EraseBattleshipCoordinates()
+    {
+        for (int i = 0; i < MAX_SHIP_SIZE; i++)
+        {
+            shipCoordinates[i].x = -1;
+            shipCoordinates[i].y = -1;
+        }
     }
 
     void CorrectConfig(int& sixTileShips, int& fourTileShips, int& threeTileShips, int& twoTileShips)
@@ -390,6 +409,26 @@ struct Battleship
 
     }
 
+    void EraseShipCollision(int playerShipBoard[][BOARD_WIDTH])
+    {
+        int x1 = shipCoordinates[0].x - 1;
+        int y1 = shipCoordinates[0].y - 1;
+        int x2 = shipCoordinates[length - 1].x + 1;
+        int y2 = shipCoordinates[length - 1].y + 1;
+
+        for (int i = x1; i <= x2; i++)
+        {
+            for (int j = y1; j <= y2; j++)
+            {
+                if (i >= 0 && j >= 0 && i < BOARD_HEIGHT && j < BOARD_HEIGHT)
+                {
+                    playerShipBoard[i][j] = BOARD_BLANKSPACE;
+                }
+            }
+        }
+
+    }
+
     void AddToHitBoard(int playerHitBoard[][BOARD_WIDTH])
     {
         for (int i = 0; i < length; i++)
@@ -407,6 +446,16 @@ struct Battleship
             int x = shipCoordinates[i].x;
             int y = shipCoordinates[i].y;
             playerShipBoard[x][y] = BOARD_SHIP;
+        }
+    }
+
+    void EraseFromShipBoard(int playerShipBoard[][BOARD_WIDTH])
+    {
+        for (int i = 0; i < length; i++)
+        {
+            int x = shipCoordinates[i].x;
+            int y = shipCoordinates[i].y;
+            playerShipBoard[x][y] = BOARD_BLANKSPACE;
         }
     }
 };
@@ -442,7 +491,7 @@ int GetHitShipIdx(Player player, Point hitPoint)
         }
         
     }
-    return -1;
+    
 }
 
 int myStrlen(char str[])
@@ -668,6 +717,40 @@ void GetConfigFromFile(Player &player, string filePath)//Battleship config[], Pl
     userFile.close();
 }
 
+int GetShipIdx(Player player, string searchedConfig)
+{
+    char posLetter = ' ', dirLetter = ' ';
+    int posNumber = -1, length = 0;
+
+    posLetter = searchedConfig[0];
+    
+    if (searchedConfig.length() == 6)
+    {
+        posNumber = searchedConfig[1] - '0';
+        dirLetter = searchedConfig[3];
+        length = searchedConfig[5] - '0';
+    }
+    else if (searchedConfig.length() == 7)
+    {
+        posNumber = 0;
+        posNumber += (searchedConfig[1] - '0') * 10;
+        posNumber += searchedConfig[2] - '0';
+        dirLetter = searchedConfig[4];
+        length = searchedConfig[6] - '0';
+    }
+    
+    for (int i = 0; i < MAX_SHIPS_AMOUNT; i++)
+    {
+        Battleship battleship = player.battleships[i];
+        if (battleship.posLetter == posLetter && battleship.posNumber == posNumber &&
+            battleship.dirLetter == dirLetter && battleship.length == length)
+        {
+            return i;
+        }
+    }
+    return -1;
+}
+
 void PlayerStart(Player &player)//Battleship configPlayer[], string playerName, Player &player, int playerShipBoard[][BOARD_WIDTH])
 {
     char answer;
@@ -682,49 +765,108 @@ void PlayerStart(Player &player)//Battleship configPlayer[], string playerName, 
     std::cout << endl;
     std::cout << "Would you like to upload ship configuration from file?" << endl;
     std::cout << "Y / N? : ";
+    
     cin >> answer;
     if (answer == 'Y' || answer == 'y')
     {
         //string path;
         //std::cout << "Please input file path : ";
         // cin >> path;
-        GetConfigFromFile(player, "C:\\Users\\lenya\\Documents\\Battleships.txt");//configPlayer, player,"C:\\Users\\lenya\\Documents\\Battleships.txt", playerShipBoard);
+        GetConfigFromFile(player, "C:\\Users\\lenya\\Documents\\Battleships.txt");
         DisplayBoard(player.ShipBoard);
     }
     else
     {
-        std::cout << "Input your ship configuration in format A1 R L , where A1 is starting tile, R is direction and L is length: " << endl;
-        for (int i = 0; i < MAX_SHIPS_AMOUNT; i++)
+        
+        for (int i = 0; i < MAX_SHIPS_AMOUNT;)
         {
-            Battleship &battleship = player.battleships[i];
-            std::cout << endl;
-            std::cout << "Input ship " << i + 1 << " : ";
-            battleship.InputBattleshipConfig(sixTileShips, fourTileShips, threeTileShips, twoTileShips);
-            
-            while (!battleship.CheckConfig(sixTileShips, fourTileShips, threeTileShips, twoTileShips))
+            int answer;
+            cout << "1. Input next ship" << endl;
+            cout << "2. Edit ship configuration" << endl;
+            cout << "3. Show ship board" << endl;
+            cout << "Choose option : ";
+            cin >> answer;
+
+            if (answer == 1)
             {
-                battleship.CorrectConfig(sixTileShips, fourTileShips, threeTileShips, twoTileShips);
-            }
-            
-            while (!battleship.CheckShip())
-            {
+                Battleship& battleship = player.battleships[i];
                 std::cout << endl;
-                std::cout << "Move your ship at position ";
-                battleship.PrintConfig();
-                std::cout << endl;
-                std::cout << "It's too long to fit the board" << endl;
                 std::cout << "Input your ship configuration in format A1 R L , where A1 is starting tile, R is direction and L is length: " << endl;
+                std::cout << "Input ship " << i + 1 << " : ";
                 battleship.InputBattleshipConfig(sixTileShips, fourTileShips, threeTileShips, twoTileShips);
+
+                while (!battleship.CheckConfig(sixTileShips, fourTileShips, threeTileShips, twoTileShips))
+                {
+                    battleship.CorrectConfig(sixTileShips, fourTileShips, threeTileShips, twoTileShips);
+                }
+
+                while (!battleship.CheckShip())
+                {
+                    std::cout << endl;
+                    std::cout << "Move your ship at position ";
+                    battleship.PrintConfig();
+                    std::cout << endl;
+                    std::cout << "It's too long to fit the board" << endl;
+                    std::cout << "Input your ship configuration in format A1 R L , where A1 is starting tile, R is direction and L is length: " << endl;
+                    battleship.InputBattleshipConfig(sixTileShips, fourTileShips, threeTileShips, twoTileShips);
+                }
+               
+                battleship.WriteBattleshipCoordinates();
+                battleship.AddShipCollision(player.ShipBoard);
+                battleship.AddToShipBoard(player.ShipBoard);
+                i++;
+                std::cout << endl;
             }
+            else if (answer == 2)
+            {
+                string buffer = " ";
+                cout << "Input your ship configuration in format A1 R L , where A1 is starting tile, R is direction and L is length: " << endl;
+                cout << "Input ship to be edited : ";
+                
+                cin.ignore();
+                getline(cin, buffer);
 
+                while (GetShipIdx(player, buffer) == -1)
+                {
+                    cout << "No ship with such config" << endl;
+                    cout << "Input ship to be edited : ";
+                    getline(cin, buffer);
+                }
+                
+                Battleship& battleship = player.battleships[GetShipIdx(player, buffer)];
+                battleship.EraseShipCollision(player.ShipBoard);
+                battleship.EraseFromShipBoard(player.ShipBoard);
+                battleship.EraseBattleshipCoordinates();
 
-            battleship.WriteBattleshipCoordinates();
-            battleship.AddShipCollision(player.ShipBoard);
-            battleship.AddToShipBoard(player.ShipBoard);
-            
-            std::cout << endl;
+                cout << "Input your ship configuration in format A1 R L , where A1 is starting tile, R is direction and L is length: " << endl;
+                battleship.InputBattleshipConfig(sixTileShips, fourTileShips, threeTileShips, twoTileShips);
+                
+                while (!battleship.CheckConfig(sixTileShips, fourTileShips, threeTileShips, twoTileShips))
+                {
+                    battleship.CorrectConfig(sixTileShips, fourTileShips, threeTileShips, twoTileShips);
+                }
+
+                battleship.WriteBattleshipCoordinates();
+                battleship.AddShipCollision(player.ShipBoard);
+                battleship.AddToShipBoard(player.ShipBoard);
+
+                /*while (!battleship.CheckShip())
+                {
+                    std::cout << endl;
+                    std::cout << "Move your ship at position ";
+                    battleship.PrintConfig();
+                    std::cout << endl;
+                    std::cout << "It's too long to fit the board" << endl;
+                    std::cout << "Input your ship configuration in format A1 R L , where A1 is starting tile, R is direction and L is length: " << endl;
+                    battleship.InputBattleshipConfig(sixTileShips, fourTileShips, threeTileShips, twoTileShips);
+                }*/
+            }
+            else if (answer == 3)
+            {
+                DisplayBoard(player.ShipBoard);
+            }
+        
         }
-        DisplayBoard(player.ShipBoard);
     }
 }
 
@@ -856,11 +998,7 @@ int main()
     ClearConsole();
     PlayerStart(player2);
     
-    for (int i = 0; i < MAX_SHIPS_AMOUNT; i++)
-    {
-        cout << player1.battleships[i].length << endl;
-    }
-    
+
     while (true)
     {
         while (PlayerTurn(player1, player2))
