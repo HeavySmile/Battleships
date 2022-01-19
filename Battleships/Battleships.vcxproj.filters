@@ -18,6 +18,9 @@
     <ClCompile Include="Battleships.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Battleship.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Battleship.h">
