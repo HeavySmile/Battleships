@@ -3,7 +3,8 @@
 #include <cstring>
 #include <string>
 #include <fstream>
-#include "Battleship.h"
+//#include "Battleship.h"
+#include "Player.h"
 
 using namespace std;
 
@@ -16,21 +17,6 @@ bool DoesPointExist(Point p)
     else return false;
 }
 
-struct Player
-{
-    string Name;
-
-    int sixTileShips = 0;
-    int fourTileShips = 0;
-    int threeTileShips = 0;
-    int twoTileShips = 0;
-
-    int ShipBoard[BOARD_HEIGHT][BOARD_WIDTH] = { 0 };
-    int HitBoard[BOARD_HEIGHT][BOARD_WIDTH] = { 0 };
-
-    Battleship battleships[MAX_SHIPS_AMOUNT];
-
-};
 
 int GetHitShipIdx(Player player, Point hitPoint)
 {
