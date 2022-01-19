@@ -3,7 +3,6 @@
 #include <cstring>
 #include <string>
 #include <fstream>
-//#include "Battleship.h"
 #include "Player.h"
 
 using namespace std;
@@ -16,7 +15,6 @@ bool DoesPointExist(Point p)
     }
     else return false;
 }
-
 
 int GetHitShipIdx(Player player, Point hitPoint)
 {
