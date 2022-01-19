@@ -1,6 +1,6 @@
 #pragma once
 
-const int MAX_SHIPS_AMOUNT = 10;
+const int MAX_SHIPS_AMOUNT = 2;
 const int MAX_SHIP_SIZE = 6;
 const int MAX_6TILE_SHIPS_AMOUNT = 1;
 const int MAX_4TILE_SHIPS_AMOUNT = 2;

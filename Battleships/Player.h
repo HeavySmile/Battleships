@@ -18,4 +18,13 @@ struct Player
     Battleship battleships[MAX_SHIPS_AMOUNT];
 
     int GetShipIdx(string searchedConfig);
+    
+    int GetHitShipIdx(Point hitPoint);
+
+    void GetConfigFromFile(string filePath);
+
+    void PlayerStart();
+
+    bool PlayerTurn(Player& enemy);
+
 };
