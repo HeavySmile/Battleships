@@ -6,7 +6,7 @@
 
 using namespace std;
 
-const int MAX_SHIPS_AMOUNT = 5;
+const int MAX_SHIPS_AMOUNT = 10;
 const int MAX_SHIP_SIZE = 6;
 const int MAX_6TILE_SHIPS_AMOUNT = 1;
 const int MAX_4TILE_SHIPS_AMOUNT = 2;
@@ -285,22 +285,6 @@ struct Battleship
 
         if (trigger)
         {
-            switch (length)
-            {
-                case 2:
-                    twoTileShips--;
-                    break;
-                case 3:
-                    threeTileShips--;
-                    break;
-                case 4:
-                    fourTileShips--;
-                    break;
-                case 6:
-                    sixTileShips--;
-                    break;
-            }
-            
             std::cout << endl;
             std::cout << "Position to edit : ";
             PrintConfig();
@@ -581,6 +565,8 @@ void DisplayBoard(int playerShipBoard[][BOARD_WIDTH])
 void Display2Boards(int playerShipBoard[][BOARD_WIDTH], int playerHitBoard[][BOARD_WIDTH])
 {
     std::cout << endl;
+    cout << "      Ship board                     Hit board" << endl;
+    cout << endl;
     std::cout << "      A B C D E F G H I J            A B C D E F G H I J" << endl;
     std::cout << "      ___________________            ___________________" << endl;
     for (int i = 0; i < BOARD_HEIGHT; i++)
@@ -668,16 +654,20 @@ void GetConfigFromFile(Player &player, string filePath)//Battleship config[], Pl
     
     string buffer;
     
-    int sixTileShips = player.sixTileShips;
-    int fourTileShips = player.fourTileShips;
-    int threeTileShips = player.threeTileShips;
-    int twoTileShips = player.twoTileShips;
+    int &sixTileShips = player.sixTileShips;
+    int &fourTileShips = player.fourTileShips;
+    int &threeTileShips = player.threeTileShips;
+    int &twoTileShips = player.twoTileShips;
     
     for (int i = 0; getline(userFile, buffer) && i < MAX_SHIPS_AMOUNT; i++)
     {
         Battleship &battleship = player.battleships[i];
         
-       
+        cout << endl;
+        cout << player.twoTileShips << endl;
+        cout << player.threeTileShips << endl;
+        cout << player.fourTileShips << endl;
+        cout << player.sixTileShips << endl;
         // C:\\Users\\lenya\\Documents\\Battleships.txt
         if (buffer.length() == 6 || buffer.length() == 7)
         {
@@ -698,38 +688,58 @@ void GetConfigFromFile(Player &player, string filePath)//Battleship config[], Pl
             }
 
         }
-       
+        
+        switch (battleship.length)
+        {
+        case 2:
+            player.twoTileShips++;
+            break;
+        case 3:
+            player.threeTileShips++;
+            break;
+        case 4:
+            player.fourTileShips++;
+            break;
+        case 6:
+            player.sixTileShips++;
+            break;
+        }
+
         while (!battleship.CheckConfig(player.ShipBoard, sixTileShips, fourTileShips, threeTileShips, twoTileShips))
         {
             battleship.CorrectConfig(player.ShipBoard, sixTileShips, fourTileShips, threeTileShips, twoTileShips);
         }
         
-        /*while (!battleship.CheckShip())
+        while (battleship.IsColliding(player.ShipBoard))
         {
-            std::cout << endl;
-            std::cout << "Move your ship at position ";
+            switch (battleship.length)
+            {
+            case 2:
+                twoTileShips--;
+                break;
+            case 3:
+                threeTileShips--;
+                break;
+            case 4:
+                fourTileShips--;
+                break;
+            case 6:
+                sixTileShips--;
+                break;
+            }
+            cout << "Your ship is colliding with previously added ships" << endl;
+            cout << "Position to edit : ";
             battleship.PrintConfig();
-            std::cout << endl;
-            std::cout << "It's too long to fit the board" << endl;
-            std::cout << "Input your ship configuration in format A1 R L , where A1 is starting tile, R is direction and L is length: " << endl;
+            cout << endl;
+            battleship.EraseBattleshipCoordinates();
             battleship.InputBattleshipConfig(sixTileShips, fourTileShips, threeTileShips, twoTileShips);
-        }*/
-        
-        switch (battleship.length)
-        {
-            case 2: 
-                player.twoTileShips++; 
-                break;
-            case 3: 
-                player.threeTileShips++; 
-                break;
-            case 4: 
-                player.fourTileShips++; 
-                break;
-            case 6: 
-                player.sixTileShips++; 
-                break;
+            battleship.WriteBattleshipCoordinates();
         }
+        cout << endl;
+        cout << player.twoTileShips << endl;
+        cout << player.threeTileShips << endl;
+        cout << player.fourTileShips << endl;
+        cout << player.sixTileShips << endl;
 
         battleship.WriteBattleshipCoordinates();
         battleship.AddShipCollision(player.ShipBoard);
@@ -791,16 +801,17 @@ void PlayerStart(Player &player)//Battleship configPlayer[], string playerName, 
     cin >> answer;
     if (answer == 'Y' || answer == 'y')
     {
-        //string path;
-        //std::cout << "Please input file path : ";
-        // cin >> path;
-        GetConfigFromFile(player, "C:\\Users\\lenya\\Documents\\Battleships.txt");
+        string path;
+        cout << "Please input file path : ";
+        cin >> path;
+        //C:\\Users\\lenya\\Documents\\Battleships.txt
+        GetConfigFromFile(player, path);
         DisplayBoard(player.ShipBoard);
     }
     else
     {
         
-        for (int i = 0; i < MAX_SHIPS_AMOUNT;)
+        for (int i = 0; i <= MAX_SHIPS_AMOUNT;)
         {
             cout << endl;
             cout << "2 tile ships: " << player.twoTileShips << endl;
@@ -808,14 +819,32 @@ void PlayerStart(Player &player)//Battleship configPlayer[], string playerName, 
             cout << "4 tile ships: " << player.fourTileShips << endl;
             cout << "6 tile ships: " << player.sixTileShips << endl;
             cout << endl;
-            int answer;
-            cout << "1. Input next ship" << endl;
-            cout << "2. Edit ship configuration" << endl;
-            cout << "3. Show ship board" << endl;
-            cout << "Choose option : ";
+            string answer = " ";
+            
+            if (i < MAX_SHIPS_AMOUNT)
+            {
+                cout << "1. Input next ship" << endl;
+                cout << "2. Edit ship configuration" << endl;
+                cout << "3. Show ship board" << endl;
+                cout << endl;
+                cout << "Choose option : ";
+            }
+            else if (i == MAX_SHIPS_AMOUNT)
+            {
+                cout << "1. Edit ship configuration" << endl;
+                cout << "2. Show ship board" << endl;
+                cout << "3. Finish" << endl;
+                cout << endl;
+                cout << "Choose option : ";
+            }
             cin >> answer;
-
-            if (answer == 1)
+            if (answer != "1" && answer != "2" && answer != "3")
+            {
+                ClearConsole();
+                continue;
+            }
+            
+            if (answer == "1" && i < MAX_SHIPS_AMOUNT)
             {
                 Battleship& battleship = player.battleships[i];
                 cout << endl;
@@ -851,7 +880,7 @@ void PlayerStart(Player &player)//Battleship configPlayer[], string playerName, 
                 i++;
                 std::cout << endl;
             }
-            else if (answer == 2)
+            else if ((answer == "2" && i < MAX_SHIPS_AMOUNT) || (answer == "1" && i == MAX_SHIPS_AMOUNT))
             {
                 string buffer = " ";
                 cout << "Input your ship configuration in format A1 R L , where A1 is starting tile, R is direction and L is length: " << endl;
@@ -935,30 +964,67 @@ void PlayerStart(Player &player)//Battleship configPlayer[], string playerName, 
                 battleship.AddToShipBoard(player.ShipBoard);
                 
             }
-            else if (answer == 3)
+            else if ((answer == "3" && i < MAX_SHIPS_AMOUNT) || (answer == "2" && i == MAX_SHIPS_AMOUNT))
             {
                 DisplayBoard(player.ShipBoard);
             }
-        
+            else if ((answer == "3" && i == MAX_SHIPS_AMOUNT))
+            {
+                break;
+            }
         }
     }
 }
 
 bool PlayerTurn(Player &player, Player &enemy)
 {
+    
+    ClearConsole();
+    cout << endl;
+    cout << "________________________________" << endl;
+    cout << player.Name << "'s turn :" << endl;
+    cout << "--------------------------------" << endl;
+    cout << endl;
+    
+    cout << "2 tile ships: " << player.twoTileShips << endl;
+    cout << "3 tile ships: " << player.threeTileShips << endl;
+    cout << "4 tile ships: " << player.fourTileShips << endl;
+    cout << "6 tile ships: " << player.sixTileShips << endl;
+    cout << endl;
+    string answer = " ";
+    
+    while (answer != "1" && answer != "2" && answer != "3")
+    {
+        cout << "1. Show hit board" << endl;
+        cout << "2. Show ship and hit board" << endl;
+        cout << "3. Fire" << endl;
+        cout << "Choose option : ";
+        cin >> answer;
+        cout << endl;
+        
+        if (answer == "1")
+        {
+            DisplayBoard(player.HitBoard);
+            answer = " ";
+        }
+        else if (answer == "2")
+        {
+            Display2Boards(player.ShipBoard, player.HitBoard);
+            answer = " ";
+        }
+        else if (answer == "3")
+        {
+            cout << "Input tile coordinates to fire at : ";
+            break;
+        }
+        cout << endl;
+    }
+
+   
+    
     string buffer;
     Point hitPoint;
-    ClearConsole();
-    std::cout << endl;
-    std::cout << "________________________________" << endl;
-    std::cout << player.Name << "'s turn :" << endl;
-    std::cout << "--------------------------------" << endl;
-    std::cout << endl;
-    Display2Boards(player.ShipBoard, player.HitBoard);
-    std::cout << endl;
-    std::cout << endl;
-    std::cout << "Input tile coordinates to fire at : ";
-    std::cin >> buffer;
+    cin >> buffer;
     
     if (buffer.length() == 2)
     {
@@ -973,14 +1039,13 @@ bool PlayerTurn(Player &player, Player &enemy)
     
     if (enemy.ShipBoard[hitPoint.x][hitPoint.y] == BOARD_SHIP)
     {
+        cout << endl;
+        cout << "Result : HIT" << endl;
         player.HitBoard[hitPoint.x][hitPoint.y] = BOARD_HIT;
-        cout << enemy.ShipBoard[hitPoint.x][hitPoint.y] << endl;
         enemy.ShipBoard[hitPoint.x][hitPoint.y] = BOARD_HIT;
         
         int hitShipIdx = GetHitShipIdx(player, hitPoint);
         
-        cout << enemy.ShipBoard[hitPoint.x][hitPoint.y] << endl;
-        cout << hitShipIdx << endl;
         for (int i = 0; i < player.battleships[hitShipIdx].length; i++)
         {
             Point &shipCoordinate = player.battleships[hitShipIdx].shipCoordinates[i];
@@ -1086,6 +1151,14 @@ int main()
                 cout << "PLAYER 1 has won" << endl;
                 return 0;
             }
+            char answer = ' ';
+            while (answer != 'y' && answer != 'Y')
+            {
+                cout << endl;
+                cout << "Continue game?" << endl;
+                cout << "Type Y/y : ";
+                cin >> answer;
+            }
         }
 
         while (PlayerTurn(player2, player1))
@@ -1098,6 +1171,16 @@ int main()
                 cout << "PLAYER 2 has won" << endl;
                 return 0;
             }
+            
+            char answer = ' ';
+            while (answer != 'y' && answer != 'Y')
+            {
+                cout << endl;
+                cout << "Continue game?" << endl;
+                cout << "Type Y/y : ";
+                cin >> answer;
+            }
+
         }
     }
     
