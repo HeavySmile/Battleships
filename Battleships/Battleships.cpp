@@ -153,40 +153,6 @@ void GetConfigFromFile(Player &player, string filePath)
     userFile.close();
 }
 
-int GetShipIdx(Player player, string searchedConfig)
-{
-    char posLetter = ' ', dirLetter = ' ';
-    int posNumber = -1, length = 0;
-
-    posLetter = searchedConfig[0];
-    
-    if (searchedConfig.length() == 6)
-    {
-        posNumber = searchedConfig[1] - '0';
-        dirLetter = searchedConfig[3];
-        length = searchedConfig[5] - '0';
-    }
-    else if (searchedConfig.length() == 7)
-    {
-        posNumber = 0;
-        posNumber += (searchedConfig[1] - '0') * 10;
-        posNumber += searchedConfig[2] - '0';
-        dirLetter = searchedConfig[4];
-        length = searchedConfig[6] - '0';
-    }
-    
-    for (int i = 0; i < MAX_SHIPS_AMOUNT; i++)
-    {
-        Battleship battleship = player.battleships[i];
-        if (battleship.posLetter == posLetter && battleship.posNumber == posNumber &&
-            battleship.dirLetter == dirLetter && battleship.length == length)
-        {
-            return i;
-        }
-    }
-    return -1;
-}
-
 void PlayerStart(Player &player)
 {
     char answer;
@@ -302,14 +268,14 @@ void PlayerStart(Player &player)
                 cin.ignore();
                 getline(cin, buffer);
 
-                while (GetShipIdx(player, buffer) == -1)
+                while (player.GetShipIdx(buffer) == -1)
                 {
                     cout << "No ship with such config" << endl;
                     cout << "Input ship to be edited : ";
                     getline(cin, buffer);
                 }
                 
-                Battleship& battleship = player.battleships[GetShipIdx(player, buffer)];
+                Battleship& battleship = player.battleships[player.GetShipIdx(buffer)];
                 battleship.EraseShipCollision(player.ShipBoard);
                 battleship.EraseFromShipBoard(player.ShipBoard);
                 battleship.EraseBattleshipCoordinates();

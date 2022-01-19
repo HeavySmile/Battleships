@@ -17,5 +17,5 @@ struct Player
 
     Battleship battleships[MAX_SHIPS_AMOUNT];
 
-
+    int GetShipIdx(string searchedConfig);
 };
