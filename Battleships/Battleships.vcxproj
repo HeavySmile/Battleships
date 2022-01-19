@@ -141,6 +141,7 @@
   <ItemGroup>
     <ClCompile Include="Battleship.cpp" />
     <ClCompile Include="Battleships.cpp" />
+    <ClCompile Include="Display.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Battleship.h" />
