@@ -8,16 +8,9 @@
 
 using namespace std;
 
-void ClearConsole()
-{
-    for (int i = 0; i < 50; i++)
-    {
-        std::cout << endl;
-    }
-}
-
 int main()
 {
+    //C:\\Users\\lenya\\Documents\\Battleships.txt
     Player player1, player2;
     
     player1.Name = "PLAYER 1";

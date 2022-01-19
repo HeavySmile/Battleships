@@ -75,7 +75,6 @@ void Player::GetConfigFromFile(string filePath)
     for (int i = 0; getline(userFile, buffer) && i < MAX_SHIPS_AMOUNT; i++)
     {
         Battleship& battleship = battleships[i];
-        // C:\\Users\\lenya\\Documents\\Battleships.txt
         if (buffer.length() == 6 || buffer.length() == 7)
         {
             battleship.posLetter = buffer[0];
@@ -160,18 +159,18 @@ void Player::PlayerStart()
     cout << Name << " :" << endl;
     cout << "----------" << endl;
     cout << endl;
-    while (answer != "Y" && answer != "y")
+    while (answer != "Y" && answer != "y" && answer != "N" && answer != "n")
     {
         cout << "Would you like to upload ship configuration from file?" << endl;
         cout << "Y / N? : ";
         cin >> answer;
     }
+    
     if (answer == "Y" || answer == "y")
     {
         string path;
         cout << "Please input file path : ";
         cin >> path;
-        //C:\\Users\\lenya\\Documents\\Battleships.txt
         GetConfigFromFile(path);
         DisplayBoard(ShipBoard);
 
@@ -216,7 +215,7 @@ void Player::PlayerStart()
             cin >> answer;
             if (answer != "1" && answer != "2" && answer != "3")
             {
-                //ClearConsole();
+                ClearConsole();
                 continue;
             }
 
@@ -355,7 +354,7 @@ void Player::PlayerStart()
 bool Player::PlayerTurn(Player& enemy)
 {
 
-    //ClearConsole();
+    ClearConsole();
     cout << endl;
     cout << "________________________________" << endl;
     cout << Name << "'s turn :" << endl;

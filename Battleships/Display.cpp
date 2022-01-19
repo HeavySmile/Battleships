@@ -125,3 +125,11 @@ void Display2Boards(int playerShipBoard[][BOARD_WIDTH], int playerHitBoard[][BOA
         std::cout << endl;
     }
 }
+
+void ClearConsole()
+{
+    for (int i = 0; i < 50; i++)
+    {
+        std::cout << endl;
+    }
+}
