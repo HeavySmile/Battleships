@@ -237,6 +237,7 @@ void Player::PlayerStart()
 
                 while (!battleship.CheckConfig(ShipBoard, sixTileShips, fourTileShips, threeTileShips, twoTileShips))
                 {
+                    cout << endl;
                     battleship.CorrectConfig(ShipBoard, sixTileShips, fourTileShips, threeTileShips, twoTileShips);
                 }
 
@@ -245,6 +246,7 @@ void Player::PlayerStart()
                 while (battleship.IsColliding(ShipBoard))
                 {
                     cout << "Your ship is colliding with previously added ships" << endl;
+                    cout << endl;
                     cout << "Position to edit : ";
                     battleship.PrintConfig();
                     
@@ -266,6 +268,7 @@ void Player::PlayerStart()
                     
                     cout << endl;
                     battleship.EraseBattleshipCoordinates();
+                    cout << "Correct your ship configuration : ";
                     battleship.InputBattleshipConfig(sixTileShips, fourTileShips, threeTileShips, twoTileShips);
                     battleship.PrintConfig();
                     battleship.WriteBattleshipCoordinates();
@@ -283,12 +286,13 @@ void Player::PlayerStart()
             else if ((answer == "2" && i < MAX_SHIPS_AMOUNT) || (answer == "1" && i == MAX_SHIPS_AMOUNT))
             {
                 string buffer = " ";
+                cout << endl;
                 cout << "Input your ship configuration in format A1 R L , where A1 is starting tile, R is direction and L is length: " << endl;
                 cout << "Input ship to be edited : ";
 
                 cin.ignore();
                 getline(cin, buffer);
-
+                cout << endl;
                 while (GetShipIdx(buffer) == -1)
                 {
                     cout << "No ship with such config" << endl;
@@ -324,10 +328,12 @@ void Player::PlayerStart()
                 }
 
                 cout << "Input your ship configuration in format A1 R L , where A1 is starting tile, R is direction and L is length: " << endl;
+                cout << "Input new ship configuration : ";
                 battleship.InputBattleshipConfig(sixTileShips, fourTileShips, threeTileShips, twoTileShips);
 
                 while (!battleship.CheckConfig(ShipBoard, sixTileShips, fourTileShips, threeTileShips, twoTileShips))
                 {
+                    cout << endl;
                     battleship.CorrectConfig(ShipBoard, sixTileShips, fourTileShips, threeTileShips, twoTileShips);
                 }
 
@@ -335,6 +341,7 @@ void Player::PlayerStart()
 
                 while (battleship.IsColliding(ShipBoard))
                 {
+                    cout << endl;
                     cout << "Your ship is colliding with previously added ships" << endl;
                     cout << "Position to edit : ";
                     battleship.PrintConfig();
@@ -357,6 +364,7 @@ void Player::PlayerStart()
                     
                     cout << endl;
                     battleship.EraseBattleshipCoordinates();
+                    cout << "Correct your ship configuration : ";
                     battleship.InputBattleshipConfig(sixTileShips, fourTileShips, threeTileShips, twoTileShips);
                     battleship.WriteBattleshipCoordinates();
 

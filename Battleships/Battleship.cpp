@@ -83,25 +83,18 @@ bool Battleship::CheckConfig(int playerShipBoard[][BOARD_WIDTH], int sixTileShip
 void Battleship::InputBattleshipConfig(int& sixTileShips, int& fourTileShips, int& threeTileShips, int& twoTileShips)
 {
     string buffer = " ";
-    
-    /*cin.ignore();
-    getline(cin, buffer);*/
     cin >> buffer;
-
+   
     posLetter = buffer[0];
     if (buffer.length() == 2)
     {
         posNumber = buffer[1] - '0';
-        /*dirLetter = buffer[3];
-        length = buffer[5] - '0';*/
     }
     else if (buffer.length() == 3)
     {
         posNumber = 0;
         posNumber += (buffer[1] - '0') * 10;
         posNumber += buffer[2] - '0';
-        /*dirLetter = buffer[4];
-        length = buffer[6] - '0';*/
     }
     cin >> dirLetter;
     cin >> length;
