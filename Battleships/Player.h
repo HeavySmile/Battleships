@@ -19,7 +19,7 @@ struct Player
 
     int GetShipIdx(string searchedConfig);
     
-    int GetHitShipIdx(Point hitPoint);
+    int GetHitShipIdx(Battleship enemyBattleships[], Point hitPoint);
 
     void GetConfigFromFile(string filePath);
 

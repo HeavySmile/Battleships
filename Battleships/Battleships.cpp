@@ -10,7 +10,8 @@ using namespace std;
 
 int main()
 {
-    //C:\\Users\\lenya\\Documents\\Battleships.txt
+    //C:\\Users\\lenya\\Documents\\Battleships1.txt
+    //C:\\Users\\lenya\\Documents\\Battleships2.txt
     Player player1, player2;
     
     player1.Name = "PLAYER 1";

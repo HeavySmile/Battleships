@@ -40,15 +40,15 @@ int Player::GetShipIdx(string searchedConfig)
     return -1;
 }
 
-int Player::GetHitShipIdx(Point hitPoint)
+int Player::GetHitShipIdx(Battleship enemyBattleships[], Point hitPoint)
 {
 
     for (int i = 0; i < MAX_SHIPS_AMOUNT; i++)
     {
-        for (int j = 0; j < battleships[i].length; j++)
+        for (int j = 0; j < enemyBattleships[i].length; j++)
         {
-            Point shipCoordinate = battleships[i].shipCoordinates[j];
-            if (battleships[i].shipCoordinates[j].x == hitPoint.x && battleships[i].shipCoordinates[j].y == hitPoint.y)
+            Point shipCoordinate = enemyBattleships[i].shipCoordinates[j];
+            if (enemyBattleships[i].shipCoordinates[j].x == hitPoint.x && enemyBattleships[i].shipCoordinates[j].y == hitPoint.y)
             {
                 return i;
             }
@@ -196,7 +196,14 @@ void Player::PlayerStart()
             cout << endl;
             string answer = " ";
 
-            if (i < MAX_SHIPS_AMOUNT)
+            if (i == 0)
+            {
+                cout << "1. Input next ship" << endl;
+                cout << "2. Show ship board" << endl;
+                cout << endl;
+                cout << "Choose option : ";
+            }
+            else if (i < MAX_SHIPS_AMOUNT)
             {
                 cout << "1. Input next ship" << endl;
                 cout << "2. Edit ship configuration" << endl;
@@ -240,9 +247,27 @@ void Player::PlayerStart()
                     cout << "Your ship is colliding with previously added ships" << endl;
                     cout << "Position to edit : ";
                     battleship.PrintConfig();
+                    
+                    switch (battleship.length)
+                    {
+                    case 2:
+                        twoTileShips--;
+                        break;
+                    case 3:
+                        threeTileShips--;
+                        break;
+                    case 4:
+                        fourTileShips--;
+                        break;
+                    case 6:
+                        sixTileShips--;
+                        break;
+                    }
+                    
                     cout << endl;
                     battleship.EraseBattleshipCoordinates();
                     battleship.InputBattleshipConfig(sixTileShips, fourTileShips, threeTileShips, twoTileShips);
+                    battleship.PrintConfig();
                     battleship.WriteBattleshipCoordinates();
                 }
 
@@ -313,11 +338,7 @@ void Player::PlayerStart()
                     cout << "Your ship is colliding with previously added ships" << endl;
                     cout << "Position to edit : ";
                     battleship.PrintConfig();
-                    cout << endl;
-                    battleship.EraseBattleshipCoordinates();
-                    battleship.InputBattleshipConfig(sixTileShips, fourTileShips, threeTileShips, twoTileShips);
-                    battleship.WriteBattleshipCoordinates();
-
+                    
                     switch (battleship.length)
                     {
                     case 2:
@@ -333,13 +354,20 @@ void Player::PlayerStart()
                         sixTileShips--;
                         break;
                     }
+                    
+                    cout << endl;
+                    battleship.EraseBattleshipCoordinates();
+                    battleship.InputBattleshipConfig(sixTileShips, fourTileShips, threeTileShips, twoTileShips);
+                    battleship.WriteBattleshipCoordinates();
+
+                    
                 }
 
                 battleship.AddShipCollision(ShipBoard);
                 battleship.AddToShipBoard(ShipBoard);
 
             }
-            else if ((answer == "3" && i < MAX_SHIPS_AMOUNT) || (answer == "2" && i == MAX_SHIPS_AMOUNT))
+            else if ((answer == "3" && i < MAX_SHIPS_AMOUNT) || (answer == "2" && i == MAX_SHIPS_AMOUNT) || (answer == "2" && i == 0))
             {
                 DisplayBoard(ShipBoard);
             }
@@ -419,12 +447,12 @@ bool Player::PlayerTurn(Player& enemy)
         HitBoard[hitPoint.x][hitPoint.y] = BOARD_HIT;
         enemy.ShipBoard[hitPoint.x][hitPoint.y] = BOARD_HIT;
 
-        int hitShipIdx = GetHitShipIdx(hitPoint);
+        int hitShipIdx = GetHitShipIdx(enemy.battleships, hitPoint);
 
-        for (int i = 0; i < battleships[hitShipIdx].length; i++)
+        for (int i = 0; i < enemy.battleships[hitShipIdx].length; i++)
         {
-            Point& shipCoordinate = battleships[hitShipIdx].shipCoordinates[i];
-            Point& hitCoordinate = battleships[hitShipIdx].hitCoordinates[i];
+            Point& shipCoordinate = enemy.battleships[hitShipIdx].shipCoordinates[i];
+            Point& hitCoordinate = enemy.battleships[hitShipIdx].hitCoordinates[i];
 
             if (shipCoordinate.x == hitPoint.x && shipCoordinate.y == hitPoint.y)
             {
@@ -435,17 +463,17 @@ bool Player::PlayerTurn(Player& enemy)
             }
         }
 
-        if (battleships[hitShipIdx].IsShipSunk())
+        if (enemy.battleships[hitShipIdx].IsShipSunk())
         {
-            switch (battleships[hitShipIdx].length)
+            switch (enemy.battleships[hitShipIdx].length)
             {
             case 2: enemy.twoTileShips--; break;
             case 3: enemy.threeTileShips--; break;
             case 4: enemy.fourTileShips--; break;
             case 6: enemy.fourTileShips--; break;
             }
-            battleships[hitShipIdx].AddHitCollision(HitBoard);
-            battleships[hitShipIdx].AddToHitBoard(HitBoard);
+            enemy.battleships[hitShipIdx].AddHitCollision(HitBoard);
+            enemy.battleships[hitShipIdx].AddToHitBoard(HitBoard);
         }
 
 
