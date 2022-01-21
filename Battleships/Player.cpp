@@ -557,7 +557,19 @@ bool Player::PlayerTurn(Player& enemy)
     
     // Input in format A1
     cin >> buffer;
-
+    
+    // Check if buffer is in format A1/A10
+    while (buffer.length() < 2 || buffer.length() > 3 || buffer[0] < 'A' || buffer[0] > 'J' && 
+        buffer[0] < 'a' || buffer[0] > 'j' || buffer.length() == 2 && buffer[1] < '1' || 
+        buffer[1] > '9' || buffer.length() == 3 && buffer[1] > '1' || buffer[2] > '0')
+    {
+        
+        cout << endl;
+        cout << "Please, input valid coordinate in format A1/A10" << endl;
+        cout << "Correct your input : ";
+        cin >> buffer;
+    }
+    
     // Format A1
     if (buffer.length() == 2)
     {
