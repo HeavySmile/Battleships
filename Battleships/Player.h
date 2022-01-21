@@ -1,3 +1,18 @@
+/**
+*
+* Solution to course project # 8
+* Introduction to programming course
+* Faculty of Mathematics and Informatics of Sofia University
+* Winter semester 2021/2022
+*
+* @author Leonid Shubin
+* @idnumber 1MI0600120
+* @compiler VC
+*
+* <Player structure header file>
+*
+*/
+
 #pragma once
 #include <cstring>
 #include "Constants.h"
