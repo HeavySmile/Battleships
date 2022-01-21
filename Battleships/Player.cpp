@@ -16,6 +16,7 @@
 #include <cstring>
 #include <iostream>
 #include <fstream>
+#include <stdlib.h>
 #include "Player.h"
 #include "Display.h"
 
@@ -106,7 +107,8 @@ void Player::GetConfigFromFile()
     string buffer;
 
     // Reading each file line until MAX_SHIPS_AMOUNT is reached
-    for (int i = 0; getline(userFile, buffer) && i < MAX_SHIPS_AMOUNT; i++)
+    int i;
+    for (i = 0; getline(userFile, buffer) && i < MAX_SHIPS_AMOUNT; i++)
     {
         Battleship& battleship = battleships[i];
         
@@ -205,8 +207,17 @@ void Player::GetConfigFromFile()
         battleship.AddToShipBoard(ShipBoard);
 
     }
-
+    
     userFile.close();
+    
+    // File configuration is too short
+    if (i != MAX_SHIPS_AMOUNT)
+    {
+        cout << endl;
+        cout << "Error, too few ships in current file" << endl;
+        
+        exit(-1);
+    }
 }
 
 void Player::PlayerStart()
@@ -560,8 +571,8 @@ bool Player::PlayerTurn(Player& enemy)
     
     // Check if buffer is in format A1/A10
     while (buffer.length() < 2 || buffer.length() > 3 || buffer[0] < 'A' || buffer[0] > 'J' && 
-        buffer[0] < 'a' || buffer[0] > 'j' || buffer.length() == 2 && buffer[1] < '1' || 
-        buffer[1] > '9' || buffer.length() == 3 && buffer[1] > '1' || buffer[2] > '0')
+           buffer[0] < 'a' || buffer[0] > 'j' || buffer.length() == 2 && buffer[1] < '1' || 
+           buffer[1] > '9' || buffer.length() == 3 && buffer[1] > '1' || buffer[2] > '0')
     {
         
         cout << endl;
