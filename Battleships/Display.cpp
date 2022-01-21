@@ -21,50 +21,51 @@ using namespace std;
 
 void DisplayBoard(int playerShipBoard[][BOARD_WIDTH])
 {
-    std::cout << endl;
-    std::cout << "      A B C D E F G H I J" << endl;
-    std::cout << "      ___________________" << endl;
+    cout << endl;
+    cout << "      A B C D E F G H I J" << endl;
+    cout << "      ___________________" << endl;
     for (int i = 0; i < BOARD_HEIGHT; i++)
     {
         if (i + 1 == BOARD_HEIGHT)
         {
-            std::cout << i + 1;
-            std::cout << "  |";
+            cout << i + 1;
+            cout << "  |";
         }
         else
         {
-            std::cout << " ";
-            std::cout << i + 1;
-            std::cout << "  |";
+            cout << " ";
+            cout << i + 1;
+            cout << "  |";
         }
 
         for (int j = 0; j < BOARD_WIDTH; j++)
         {
             switch (playerShipBoard[i][j])
             {
-            case BOARD_SHIP:
-                std::cout << " X";
-                break;
-            case BOARD_COLLISION_AREA:
-                std::cout << " !";
-                break;
-            case BOARD_HIT:
-                std::cout << " H";
-                break;
-            case BOARD_FAIL_HIT:
-                std::cout << " F";
-                break;
-            default:
-                std::cout << " *"; break;
+                case BOARD_SHIP:
+                    cout << " X";
+                    break;
+                case BOARD_COLLISION_AREA:
+                    cout << " !";
+                    break;
+                case BOARD_HIT:
+                    cout << " H";
+                    break;
+                case BOARD_FAIL_HIT:
+                    cout << " F";
+                    break;
+                default:
+                    cout << " *"; 
+                    break;
             }
         }
-        std::cout << endl;
+        cout << endl;
     }
 }
 
 void Display2Boards(int playerShipBoard[][BOARD_WIDTH], int playerHitBoard[][BOARD_WIDTH])
 {
-    std::cout << endl;
+    cout << endl;
     cout << "      Ship board                     Hit board" << endl;
     cout << endl;
     std::cout << "      A B C D E F G H I J            A B C D E F G H I J" << endl;
@@ -73,14 +74,14 @@ void Display2Boards(int playerShipBoard[][BOARD_WIDTH], int playerHitBoard[][BOA
     {
         if (i + 1 == BOARD_HEIGHT)
         {
-            std::cout << i + 1;
-            std::cout << "  |";
+            cout << i + 1;
+            cout << "  |";
         }
         else
         {
-            std::cout << " ";
-            std::cout << i + 1;
-            std::cout << "  |";
+            cout << " ";
+            cout << i + 1;
+            cout << "  |";
         }
 
         for (int j = 0; j < BOARD_WIDTH; j++)
@@ -88,33 +89,33 @@ void Display2Boards(int playerShipBoard[][BOARD_WIDTH], int playerHitBoard[][BOA
             switch (playerShipBoard[i][j])
             {
             case BOARD_SHIP:
-                std::cout << " X";
+                cout << " X";
                 break;
             case BOARD_COLLISION_AREA:
-                std::cout << " !";
+                cout << " !";
                 break;
             case BOARD_HIT:
-                std::cout << " H";
+                cout << " H";
                 break;
             case BOARD_FAIL_HIT:
-                std::cout << " F";
+                cout << " F";
                 break;
             default:
-                std::cout << " *"; break;
+                cout << " *"; break;
             }
         }
 
         if (i + 1 == BOARD_HEIGHT)
         {
-            std::cout << "      ";
-            std::cout << i + 1;
-            std::cout << "  |";
+            cout << "      ";
+            cout << i + 1;
+            cout << "  |";
         }
         else
         {
-            std::cout << "       ";
-            std::cout << i + 1;
-            std::cout << "  |";
+            cout << "       ";
+            cout << i + 1;
+            cout << "  |";
         }
 
         for (int j = 0; j < BOARD_WIDTH; j++)
@@ -122,22 +123,22 @@ void Display2Boards(int playerShipBoard[][BOARD_WIDTH], int playerHitBoard[][BOA
             switch (playerHitBoard[i][j])
             {
             case BOARD_SHIP:
-                std::cout << " X";
+                cout << " X";
                 break;
             case BOARD_COLLISION_AREA:
-                std::cout << " !";
+                cout << " !";
                 break;
             case BOARD_HIT:
-                std::cout << " H";
+                cout << " H";
                 break;
             case BOARD_FAIL_HIT:
-                std::cout << " F";
+                cout << " F";
                 break;
             default:
-                std::cout << " *"; break;
+                cout << " *"; break;
             }
         }
-        std::cout << endl;
+        cout << endl;
     }
 }
 

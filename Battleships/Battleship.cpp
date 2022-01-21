@@ -18,6 +18,7 @@
 
 using namespace std;
 
+
 int TransformBoardChar(char character)
 {
     int widthIndex = 0;
@@ -101,6 +102,7 @@ void Battleship::InputBattleshipConfig(int& sixTileShips, int& fourTileShips, in
     cin >> buffer;
    
     posLetter = buffer[0];
+    
     if (buffer.length() == 2)
     {
         posNumber = buffer[1] - '0';
@@ -111,28 +113,31 @@ void Battleship::InputBattleshipConfig(int& sixTileShips, int& fourTileShips, in
         posNumber += (buffer[1] - '0') * 10;
         posNumber += buffer[2] - '0';
     }
+    
     cin >> dirLetter;
     cin >> length;
 
     switch (length)
     {
-    case 2:
-        twoTileShips++;
-        break;
-    case 3:
-        threeTileShips++;
-        break;
-    case 4:
-        fourTileShips++;
-        break;
-    case 6:
-        sixTileShips++;
-        break;
+        case 2:
+            twoTileShips++;
+            break;
+        case 3:
+            threeTileShips++;
+            break;
+        case 4:
+            fourTileShips++;
+            break;
+        case 6:
+            sixTileShips++;
+            break;
     }
 }
 
 void Battleship::WriteBattleshipCoordinates()
 {
+    // All coordinates are writen in ascending order
+    // Maximum coordinates count is 6, all unused element have values -2
     if (dirLetter == 'r' || dirLetter == 'R')
     {
         shipCoordinates[0].x = posNumber - 1;
@@ -199,50 +204,62 @@ void Battleship::CorrectConfig(int playerShipBoard[][BOARD_WIDTH], int& sixTileS
     if ((posLetter < 'A' || posLetter > 'J') && (posLetter < 'a' || posLetter > 'j'))
     {
         cout << "Please input valid position character from A to J" << endl;
+        
         trigger = true;
     }
     if (posNumber > 10)
     {
         cout << "Please input valid position number from 1 to 10" << endl;
+        
         trigger = true;
     }
     if (dirLetter != 'r' && dirLetter != 'l' && dirLetter != 't' && dirLetter != 'b' &&
         dirLetter != 'R' && dirLetter != 'L' && dirLetter != 'T' && dirLetter != 'B')
     {
         cout << "Please input valid direction" << endl;
+        
         trigger = true;
     }
     if (length < 2 || length > 6 || length == 5)
     {
         cout << "Please input valid length : 2 , 3 , 4 , 6" << endl;
+        
         trigger = true;
     }
 
     if (sixTileShips > MAX_6TILE_SHIPS_AMOUNT)
     {
         cout << "Please input valid length, you reached max number of 6 tile ships" << endl;
+        
         sixTileShips--;
+        
         trigger = true;
     }
 
     if (fourTileShips > MAX_4TILE_SHIPS_AMOUNT)
     {
         cout << "Please input valid length, you reached max number of 4 tile ships" << endl;
+        
         fourTileShips--;
+        
         trigger = true;
     }
 
     if (threeTileShips > MAX_3TILE_SHIPS_AMOUNT)
     {
         cout << "Please input valid length, you reached max number of 3 tile ships" << endl;
+        
         threeTileShips--;
+        
         trigger = true;
     }
 
     if (twoTileShips > MAX_2TILE_SHIPS_AMOUNT)
     {
         cout << "Please input valid length, you reached max number of 2 tile ships" << endl;
+        
         twoTileShips--;
+        
         trigger = true;
     }
 
@@ -254,6 +271,7 @@ void Battleship::CorrectConfig(int playerShipBoard[][BOARD_WIDTH], int& sixTileS
         ((dirLetter == 'b' || dirLetter == 'B') && (posNumber + length - 1 > BOARD_HEIGHT)))
     {
         cout << "Your ship is too long to fit the board" << endl;
+        
         trigger = true;
     }
 
@@ -263,6 +281,8 @@ void Battleship::CorrectConfig(int playerShipBoard[][BOARD_WIDTH], int& sixTileS
         cout << "Position to edit : ";
         PrintConfig();
         cout << endl;
+        
+        // If at least one of checks is failed, force to correct battleship configuration
         InputBattleshipConfig(sixTileShips, fourTileShips, threeTileShips, twoTileShips);
     }
 
@@ -275,6 +295,7 @@ bool Battleship::IsColliding(int playerShipBoard[][BOARD_WIDTH])
     {
         int x = shipCoordinates[i].x;
         int y = shipCoordinates[i].y;
+        
         if (playerShipBoard[x][y] == BOARD_COLLISION_AREA || playerShipBoard[x][y] == BOARD_SHIP)
         {
             return true;

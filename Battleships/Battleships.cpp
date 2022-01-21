@@ -52,7 +52,7 @@ int main()
             {
                 ClearConsole();
                 
-                // Displays Player ship board and hit board
+                // Displays player ship board and hit board
                 Display2Boards(player1.ShipBoard, player1.HitBoard);
                 
                 cout << endl;
@@ -75,10 +75,12 @@ int main()
         // Player 2 turns
         while (player2.PlayerTurn(player1))
         {
+            // If opposite player runs out of ships, the game ends 
             if (player1.sixTileShips + player1.fourTileShips + player1.threeTileShips + player1.twoTileShips <= 0)
             {
                 ClearConsole();
                 
+                // Displays player ship board and hit board
                 Display2Boards(player2.ShipBoard, player2.HitBoard);
                 
                 cout << endl;
@@ -88,6 +90,7 @@ int main()
             }
 
             char answer = ' ';
+            // Improvised pause
             while (answer != 'y' && answer != 'Y')
             {
                 cout << endl;

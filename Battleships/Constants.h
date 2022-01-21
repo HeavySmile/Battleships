@@ -24,6 +24,7 @@ const int MAX_2TILE_SHIPS_AMOUNT = 4;
 const int BOARD_WIDTH = 10;
 const int BOARD_HEIGHT = 10;
 
+// Special constants for displaying different states on ship and hit board
 const int BOARD_FAIL_HIT = 4;
 const int BOARD_HIT = 3;
 const int BOARD_SHIP = 1;
