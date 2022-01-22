@@ -1,0 +1,10 @@
+a3 b 3
+c3 b 3
+a8 r 2
+g1 r 4
+f3 b 3
+f7 b 2
+e10 r 4
+h3 b 6
+j3 b 2
+j6 b 2
