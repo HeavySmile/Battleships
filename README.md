@@ -1,7 +1,5 @@
 # Battleships project
 
-Project for Introduction to Programming course at Faculty of Mathematics and Informatics
-
 ### Pre-game info.
 
 All ship's configurations should be input in format A1 R L. No spaces after L.
