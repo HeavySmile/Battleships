@@ -6,7 +6,7 @@ All ship's configurations should be input in format A1 R L. No spaces after L.
 Same rules apply when creating own configuration file.
 A1 is an initial tile. R is a direction which the ship expands at. L is a ship's length.
 All ships could be input in random order.
-Standard way to input file path C:\\Users\\lenya\\Documents\\Battleships1.txt.
+Standard way to input file path C:\\Users\\Username\\Documents\\Battleships1.txt.
 There are two example files with valid ship's configurations in project compressed folder.
 
 ### Using preset boards (optional).
