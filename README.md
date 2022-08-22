@@ -25,3 +25,6 @@ If user chose loading from file , in case of incorrect preset, user could correc
 * Each turn, the player can see his own board and the board with hits.
 * When a player destroys all opponent's ships, game ends
 
+<p align="left">
+  <img src="Board.png">
+</p>
